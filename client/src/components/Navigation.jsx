@@ -1,10 +1,11 @@
 import RightGroup from "./RightGroup"
+import {Link} from "react-router-dom"
 const Naigation = (props) => {
     return (
         <>
         <nav>
             <div className="left-group">
-                <button type="button">Strona główna</button>
+                <Link to="/"><button type="button">Strona główna</button></Link>
                 <button type="button">Książki</button>
                 <button type="button">Forum</button>
                 <button type="button">Ranking</button>

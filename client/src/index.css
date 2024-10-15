@@ -71,4 +71,31 @@ h1 {
   width: 25%;
   background-color: #6AD4DD;
   border-radius: 8px;
+  align-items: center;
+}
+
+/*Friend card*/
+.friend{
+  border: 1px solid black;
+  margin: 10px;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+}
+
+.friendProfilPicture{
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 15px;
+}
+
+.friendInfo{
+  display: flex;
+  flex-direction: column;
+}
+
+.friendInfo p{
+  margin: 0;
+  padding: 0;
 }

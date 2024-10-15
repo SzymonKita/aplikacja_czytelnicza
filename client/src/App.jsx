@@ -1,15 +1,14 @@
 import './App.css'
-import Navigation from './components/Navigation.jsx'
+import MainPage from './components/MainPage'
+import LoginPage from './components/LoginPage'
+import { Route, Routes, Navigate } from "react-router-dom"
 
 function App() {
   return (
-    <>
-    <Navigation title="Strona główna" isLoggedIn={false} />
-    <div className='container'>
-      <div className='content'>Tu będzie content strony</div>
-      <div className='friendsList'>Tu będzie lista przyjaciółTu będzie lista przyjaciół Tu będzie lista przyjaciół Tu będzie lista przyjaciół</div>
-    </div>
-    </>
+    <Routes>
+        <Route path='/' exact element={<MainPage/>}/>
+        <Route path='login' exact element={<LoginPage/>}/>
+    </Routes>
   )
 }
 
