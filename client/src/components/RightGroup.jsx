@@ -4,7 +4,7 @@ const RightGroup = (props) =>{
         return(
         <>
         <button type="button">Biblioteczka</button>
-        <button type="button" id="test">Profil</button>
+        <Link to='profile'><button type="button" id="test">Profil</button></Link>
         </>)
     }else{
         return(<Link to='/login'><button type="button">Zaloguj</button></Link>)

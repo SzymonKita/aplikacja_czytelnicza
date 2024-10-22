@@ -99,3 +99,104 @@ h1 {
   margin: 0;
   padding: 0;
 }
+
+/*Profile*/
+.progileInfo{
+  background-color: #6AD4DD;
+  position: relative;
+  margin: 10px;
+  padding: 10px;
+  display: flex;
+}
+
+.progileInfo p{
+  display: flex;
+  flex-direction: column;
+  padding: 0 10px;
+  align-items: flex-start;
+}
+
+.avatar{
+  font-size: smaller;
+}
+
+.profilPicture{
+  width: 100px;
+  height: 100px;
+  background-color: white;
+  border-radius: 50%;
+  margin: 5px;
+}
+.stats{
+  text-align: left;
+}
+
+.stats h2{
+  margin: 0;
+}
+
+.stats h3{
+  margin: 0;
+}
+
+.logout{
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #FF6666;
+}
+
+.box{
+  background-color: #6AD4DD;
+  margin: 10px;
+  padding: 10px;
+  display:flex;
+  flex-direction: column;
+}
+
+.favouriteBooks{
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.favouriteBook{
+  width: 100px;
+  font-size: smaller;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.favouriteBookImage{
+  height: 130px;
+  width: 100px;
+  background-color: black;
+}
+
+.achievement {
+  position: relative;
+  display: inline-block;
+}
+
+.achievement img {
+  width: 100px; /* Adjust as per your needs */
+  height: auto;
+}
+
+.achievement-description {
+  display: none;
+  position: absolute;
+  bottom: 50%;
+  left: 110%;
+  background-color: #96EFFF;
+  border: 1px #797979 solid;
+  padding: 10px;
+  border-radius: 5px;
+  white-space: nowrap;
+  z-index: 10;
+}
+
+.achievement:hover .achievement-description {
+  display: block;
+}

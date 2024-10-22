@@ -4,7 +4,7 @@ import FriendCard from './FriendCard.jsx'
 const MainPage = () => {
     return (
         <>
-            <Navigation title="Strona główna" isLoggedIn={false} />
+            <Navigation title="Strona główna" isLoggedIn={true} />
             <div className='container'>
                 <div className='content'>Tu będzie content strony</div>
                 <div className='friendsList'>
