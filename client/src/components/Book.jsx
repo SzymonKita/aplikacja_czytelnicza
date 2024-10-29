@@ -1,4 +1,4 @@
-const FavouriteBook = (props) => {
+const Book = (props) => {
     return (
         <div className='favouriteBook'>
             <p className='favouriteBookImage' />
@@ -8,4 +8,4 @@ const FavouriteBook = (props) => {
     )
 }
 
-export default FavouriteBook
+export default Book

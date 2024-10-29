@@ -200,3 +200,57 @@ h1 {
 .achievement:hover .achievement-description {
   display: block;
 }
+
+/*Book List*/
+.bookList {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  width: 100%;
+}
+
+.list {
+  width: 70%;
+  background-color: lightblue;
+}
+
+.filter {
+  width: 25%;
+  height: 100%;
+  background-color: #6AD4DD;
+  align-items: center;
+  display:flex;
+  flex-direction: column;
+}
+
+.filter h3{
+  margin: 5px;
+}
+
+.categories{
+  display: flex;
+  flex-direction: column;
+  height: 100px;
+  overflow: hidden auto;
+  align-items: start;
+  width: 80%;
+  align-self: center;
+}
+
+.categories p{
+  margin: 0;
+}
+
+.categories label{
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.list{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 10px;
+  overflow: auto;
+}

@@ -1,7 +1,7 @@
 import Navigation from './Navigation.jsx'
 import FriendCard from './FriendCard.jsx'
 import ProfileInfo from './Profile/ProfileInfo.jsx'
-import FavouriteBook from './Profile/FavouriteBook.jsx'
+import Book from './Book.jsx'
 import Achievement from './Profile/Achievement.jsx'
 
 const Profile = () => {
@@ -14,9 +14,9 @@ const Profile = () => {
                     <div className='box'>
                         <h3>Ulubione książki</h3>
                         <div className='favouriteBooks'>
-                            <FavouriteBook title='Book1' author='Author Author' />
-                            <FavouriteBook title='Book2' author='Tom Smith' />
-                            <FavouriteBook title='Book2' author='Tom Smith' />
+                            <Book title='Book1' author='Author Author' />
+                            <Book title='Book2' author='Tom Smith' />
+                            <Book title='Book2' author='Tom Smith' />
                         </div>
                     </div>
                     <div className='box'>
