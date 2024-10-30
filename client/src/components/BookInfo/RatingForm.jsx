@@ -18,15 +18,17 @@ const RatingForm = () => {
 
     return (
         <form onSubmit={handleSubmit}>
-            <textarea
-                value={feedback}
-                onChange={(e) => setFeedback(e.target.value)}
-                rows="4"
-                style={{ width: '90%', marginTop: '10px', resize: 'none' }}
-            />
-            <div>
-                <StarRating onRatingSelect={handleRatingSelect} />
-                <button type="submit" style={{ marginTop: '10px' }}>Opublikuj</button>
+            <div className='ratingForm'>
+                <textarea
+                    value={feedback}
+                    onChange={(e) => setFeedback(e.target.value)}
+                    rows="4"
+                    style={{ width: '90%', marginTop: '10px', resize: 'none' }}
+                />
+                <div>
+                    <StarRating onRatingSelect={handleRatingSelect} />
+                    <button type="submit" style={{ marginTop: '10px' }}>Opublikuj</button>
+                </div>
             </div>
         </form>
     );

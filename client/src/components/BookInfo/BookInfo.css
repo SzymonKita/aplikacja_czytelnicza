@@ -22,15 +22,16 @@
     border: 1px solid #797979;
 }
 
-form{
+.ratingForm{
     background-color: #6AD4DD;
     border-radius: 8px;
     margin: 1em;
     border: 1px solid #797979;
     padding: 5px;
+    width: 100%;
 }
 
-form div{
+.ratingForm div{
     display: flex;
     justify-content: space-between;
 }
@@ -45,7 +46,7 @@ form div{
     text-align: left;
 }
 
-img{
+.userImage{
     width: 100px;
     height: auto;
     border-radius: 50%;

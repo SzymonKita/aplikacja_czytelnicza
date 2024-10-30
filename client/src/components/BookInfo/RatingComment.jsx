@@ -2,7 +2,7 @@ import image from '../Profile/blank-profile.png'
 const RatingComment = ({ rating }) => {
     return (
         <div className='bookReview'>
-            <p><img src={image} /></p>
+            <p><img src={image} className='userImage'/></p>
             <div>
                 <div className='ratingCommentHeader'>
                     <h3>Osoba 1</h3>

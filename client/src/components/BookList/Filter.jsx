@@ -1,3 +1,4 @@
+import {Link} from "react-router-dom"
 const Filter = () => {
     return (
         <div className='filter'>
@@ -27,6 +28,7 @@ const Filter = () => {
                 <p><input type='checkbox' id='5' value='Autor' /><label for='5'>Autor5</label></p>
                 <p><input type='checkbox' id='6' value='Autor' /><label for='6'>Autor6</label></p>
             </div>
+            <Link to='/suggestBook'><button type='button'>Zaproponuj nową książkę</button></Link>
         </div>
     )
 }
