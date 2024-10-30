@@ -4,29 +4,30 @@ import { AuthContext } from '../AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
-  const [email, setEmail] = useState('');
+  const [login, setLogin] = useState(''); // Użyj loginu zamiast emaila
   const [password, setPassword] = useState('');
-  const { login } = useContext(AuthContext);
+  const { login: setLoginContext } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Simulacja logowania
+    // Logowanie użytkownika
     const response = await fetch('http://localhost:5000/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ login, password }), // Zmiana na login
     });
 
     if (response.ok) {
       const data = await response.json();
-      login(data.token);
-      navigate('/dashboard'); // Przekierowanie na dashboard
+      setLoginContext(data.token); // Ustaw token w kontekście
+      navigate('/MainPage'); // Przekierowanie
     } else {
-      alert('Błąd logowania');
+      const errorData = await response.json();
+      alert(errorData.error || 'Błąd logowania'); // Wyświetlenie błędu
     }
   };
 
@@ -35,14 +36,14 @@ const Login = () => {
       <h2>Logowanie</h2>
       <form onSubmit={handleSubmit}>
         <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          type="text"
+          placeholder="Login" // Użyj loginu
+          value={login}
+          onChange={(e) => setLogin(e.target.value)}
         />
         <input
           type="password"
-          placeholder="Password"
+          placeholder="Hasło" // Użyj hasła
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
