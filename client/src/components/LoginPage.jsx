@@ -1,10 +1,10 @@
-import Navigation from './Navigation.jsx'
+import Navigation from './Navigation/Navigation.jsx'
 import FriendCard from './FriendCard.jsx'
 
 const MainPage = () => {
     return (
         <>
-            <Navigation title="Strona główna" isLoggedIn={false} />
+            <Navigation title="Strona główna"/>
             <div className='container'>
                 <div className='content'>
                     <form>

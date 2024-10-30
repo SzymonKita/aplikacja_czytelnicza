@@ -1,5 +1,6 @@
 import RightGroup from "./RightGroup"
 import {Link} from "react-router-dom"
+import "./Navigation.css"
 const Naigation = (props) => {
     return (
         <>
@@ -12,7 +13,7 @@ const Naigation = (props) => {
             </div>
 
             <div className="right-group">
-                <RightGroup isLoggedIn={props.isLoggedIn} />
+                <RightGroup isLoggedIn={true} />
             </div>
         </nav>
         <h1>{props.title}</h1>

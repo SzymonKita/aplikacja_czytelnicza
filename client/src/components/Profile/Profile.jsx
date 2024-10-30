@@ -1,13 +1,14 @@
-import Navigation from './Navigation.jsx'
-import FriendCard from './FriendCard.jsx'
-import ProfileInfo from './Profile/ProfileInfo.jsx'
-import Book from './Book.jsx'
-import Achievement from './Profile/Achievement.jsx'
+import Navigation from '../Navigation/Navigation.jsx'
+import FriendCard from '../FriendCard.jsx'
+import ProfileInfo from './ProfileInfo.jsx'
+import Book from '../Book.jsx'
+import Achievement from './Achievement.jsx'
+import "./Profile.css"
 
 const Profile = () => {
     return (
         <>
-            <Navigation title="Profil" isLoggedIn={true} />
+            <Navigation title="Profil"/>
             <div className='container'>
                 <div className='content'>
                     <ProfileInfo />
