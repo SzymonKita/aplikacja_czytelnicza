@@ -1,4 +1,4 @@
-import image from './blank-profile.png'
+import image from '../blank-profile.png'
 
 const ProfileInfo = () => {
     return (

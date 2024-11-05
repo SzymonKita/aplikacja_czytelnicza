@@ -9,7 +9,7 @@ const Naigation = (props) => {
                 <Link to="/"><button type="button">Strona główna</button></Link>
                 <Link to='/booklist'><button type="button">Książki</button></Link>
                 <button type="button">Forum</button>
-                <button type="button">Ranking</button>
+                <Link to='/ranking'><button type="button">Ranking</button></Link>
             </div>
 
             <div className="right-group">

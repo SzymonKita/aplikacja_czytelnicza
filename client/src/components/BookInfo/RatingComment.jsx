@@ -1,4 +1,4 @@
-import image from '../Profile/blank-profile.png'
+import image from '../blank-profile.png'
 const RatingComment = ({ rating }) => {
     return (
         <div className='bookReview'>
