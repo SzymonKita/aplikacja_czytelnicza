@@ -1,4 +1,3 @@
-// Card.js
 import React from 'react';
 import image from '../blank-profile.png'
 

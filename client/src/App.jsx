@@ -7,6 +7,8 @@ import BookInfo from './components/BookInfo/BookInfo.jsx'
 import SuggestBook from './components/SuggestBook/SuggestBook.jsx'
 import Ranking from './components/Ranking/Ranking.jsx'
 import Bookshelf from './components/Bookshelf/Bookshelf.jsx'
+import MainForum from './components/Forum/MainForum.jsx'
+import ForumPost from './components/ForumPost/ForumPost.jsx'
 import { Route, Routes, Navigate } from "react-router-dom"
 
 function App() {
@@ -20,6 +22,8 @@ function App() {
         <Route path='suggestBook' element={<SuggestBook/>}/>
         <Route path='ranking' exact element={<Ranking/>}/>
         <Route path='bookshelf' exact element={<Bookshelf/>}/>
+        <Route path='forum' exact element={<MainForum/>}/>
+        <Route path='forum/post/:id' element={<ForumPost/>}/>
     </Routes>
   )
 }
