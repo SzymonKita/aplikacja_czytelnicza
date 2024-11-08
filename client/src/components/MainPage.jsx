@@ -1,6 +1,5 @@
-// src/components/MainPage.jsx
-import Navigation from './Navigation';
-import FriendCard from './FriendCard';
+import Navigation from './Navigation/Navigation.jsx'
+import FriendCard from './FriendCard.jsx'
 
 const MainPage = () => {
   return (

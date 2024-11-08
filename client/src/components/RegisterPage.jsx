@@ -1,17 +1,16 @@
-// src/components/Register.jsx
 import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../AuthContext'; // Upewnij się, że kontekst jest poprawnie zaimportowany
+import { AuthContext } from '../AuthContext';
 
-const Register = () => {
-  const [login, setLogin] = useState(''); // Dodaj stan dla loginu
+const RegisterPage = () => {
+  const [login, setLogin] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { login: setLoginContext } = useContext(AuthContext); // Użycie kontekstu
+  const { login: setLoginContext } = useContext(AuthContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -39,15 +38,15 @@ const Register = () => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ login, email, password }), // Wysłanie loginu, e-maila i hasła
+      body: JSON.stringify({ login, email, password }),
     });
 
     setLoading(false);
 
     if (response.ok) {
       const { message } = await response.json();
-      alert(message); // Możesz pokazać komunikat o sukcesie
-      navigate('/login'); // Po rejestracji, przekierowanie do logowania
+      alert(message);
+      navigate('/login');
     } else {
       const errorMessage = await response.json();
       setError(errorMessage.error || 'Błąd rejestracji');
@@ -91,4 +90,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default RegisterPage;

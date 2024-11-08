@@ -1,4 +1,3 @@
-// src/AuthContext.js
 import { createContext, useState, useEffect } from 'react';
 
 export const AuthContext = createContext();
@@ -6,7 +5,6 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  // Sprawdzanie stanu logowania przy pierwszym załadowaniu strony
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
@@ -20,9 +18,10 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
+    console.log("Wywołanie funkcji wylogowania");
     localStorage.removeItem('token');
     setIsLoggedIn(false);
-  };
+};
 
   return (
     <AuthContext.Provider value={{ isLoggedIn, login, logout }}>
