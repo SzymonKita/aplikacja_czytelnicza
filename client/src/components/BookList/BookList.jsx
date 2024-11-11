@@ -13,6 +13,7 @@ const BookList = () => {
                     <div className='bookList'>
                         <Filter/>
                         <div className='list'>
+                            {/* Tu można zrobić test z filtrowania */}
                             <Book id='1' title='Book1' author='Author Author' />
                             <Book id='2' title='Book2' author='Author Author' />
                             <Book id='1' title='Book1' author='Author Author' />

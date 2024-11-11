@@ -33,6 +33,7 @@ const ForumPost = (params) => {
                     </div>
                     Komentarze:
                     <ForumCommentForm/>
+                    <ForumComment user={exampleParams.user} likes={exampleParams.likes} dislikes={exampleParams.dislikes} details={exampleParams.details}/>
                 </div>
                 <div className='friendsList'>
                     <FriendCard name='Friend 1' active={true} />
