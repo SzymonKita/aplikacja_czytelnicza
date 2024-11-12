@@ -12,48 +12,6 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-/*Navigation*/
-nav {
-  padding: 10px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border: 1px solid black
-}
-
-button {
-  border-radius: 8px;
-  border: 2px solid #797979;
-  padding: 0.6em 1.2em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #96EFFF;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-
-.left-group, .right-group {
-  display: flex;
-  gap: 20px;
-}
-
-.right-group button{
-  background-color: #5FBDFF;
-}
-
-nav .left-group {
-  flex-grow: 1;
-}
-
-nav .right-group {
-  justify-content: flex-end;
-}
-
-h1 {
-  border: 1px solid black;
-  font-size: 50px;
-}
-
 /*Container*/
 .container {
   display: flex;
@@ -98,4 +56,20 @@ h1 {
 .friendInfo p{
   margin: 0;
   padding: 0;
+}
+
+/*Book*/
+
+.book{
+  width: 100px;
+  font-size: smaller;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.bookImage{
+  height: 130px;
+  width: 100px;
+  background-color: black;
 }

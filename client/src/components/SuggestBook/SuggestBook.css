@@ -1,0 +1,39 @@
+.bookSuggestion {
+    display: flex;
+    justify-content: space-between;
+}
+
+.cover {
+    margin: 0 30px;
+}
+
+.info {
+    width: 70%;
+    text-align: start;
+}
+
+.info p input {
+    width: 200px;
+}
+
+.formButtons {
+    display: flex;
+    justify-content: space-evenly;
+    margin: 10px
+}
+
+.formButtons button {
+    font-size: 1.5em;
+}
+
+.dropZone {
+    background-color: white;
+    width: 300px;
+    height: auto;
+    min-height: 300px;
+    border: 2px dashed #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}

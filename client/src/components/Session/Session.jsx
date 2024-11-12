@@ -1,12 +1,14 @@
-import Navigation from './Navigation/Navigation.jsx'
-import FriendCard from './FriendCard.jsx'
+import Navigation from '../Navigation/Navigation.jsx'
+import FriendCard from '../FriendCard.jsx'
 
-const MainPage = () => {
+const Session = () => {
     return (
         <>
             <Navigation title="Strona główna"/>
             <div className='container'>
-                <div className='content'>Tu będzie content strony</div>
+                <div className='content'>
+                    
+                </div>
                 <div className='friendsList'>
                     <FriendCard name='Friend 1' active={true} />
                     <FriendCard name='Friend 2' active={false} />
@@ -16,4 +18,4 @@ const MainPage = () => {
     )
 }
 
-export default MainPage
+export default Session
