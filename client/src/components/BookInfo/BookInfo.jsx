@@ -39,13 +39,16 @@ const BookInfo = () => {
         return <Navigation title="Ładowanie książki..." />;
     }
 
-    const coverImagePath = `/covers/${book.Cover}`;
+    // Construct the path to the cover image
+    const coverImagePath = `http://localhost:5000/covers/${book.Cover}`;
 
     const releaseDate = new Date(book.ReleaseDate).toLocaleDateString('pl-PL', {
         year: 'numeric',
         month: '2-digit',
         day: '2-digit',
     });
+
+    const categoriesList = book.Categories ? book.Categories.split(', ') : ['Brak kategorii'];
 
     return (
         <>
@@ -54,6 +57,7 @@ const BookInfo = () => {
                 <div className='content'>
                     <div className='bookInfo'>
                         <div className='col'>
+                            {/* Display the cover image */}
                             <img src={coverImagePath} alt={`${book.Title} cover`} className='coverImage' />
                             <p style={{ fontSize: '2em' }}>Dodaj do biblioteczki +</p>
                             <p>
@@ -67,7 +71,9 @@ const BookInfo = () => {
                                 <b>Wydawnictwo:</b> {book.Publisher} <br />
                                 <b>Seria:</b> {book.Series || 'Brak serii'} <br />
                                 <b>Data wydania:</b> {releaseDate} <br />
-                                <b>Kategorie:</b> {book.Category} <br />
+                                <b>Kategorie:</b> {categoriesList.map((category, index) => (
+                                    <span key={index}>{category}{index < categoriesList.length - 1 ? ', ' : ''}</span>
+                                ))} <br />
                             </p>
                             <p>{book.Description || 'Brak opisu'}</p>
                         </div>

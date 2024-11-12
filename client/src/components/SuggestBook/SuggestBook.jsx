@@ -16,18 +16,26 @@ const SuggestBook = () => {
     const [releaseDate, setReleaseDate] = useState('');
     const [description, setDescription] = useState('');
     const [pages, setPages] = useState('');
+    const [coverFileName, setCoverFileName] = useState('');
 
     const options = [
-        { value: 'przygodowa', label: 'Przygodowa' },
-        { value: 'fantasy', label: 'Fantasy' },
-        { value: 'kryminalna', label: 'Kryminalna' },
-        { value: 'historyczna', label: 'Historyczna' },
-        { value: 'naukowa', label: 'Naukowa' }
+        { value: 'Science Fiction', label: 'Science Fiction' },
+        { value: 'Fantasy', label: 'Fantasy' },
+        { value: 'Mystery', label: 'Tajemnica' },
+        { value: 'Romance', label: 'Romans' },
+        { value: 'Horror', label: 'Horror' },
+        { value: 'Historical Fiction', label: 'Fikcja Historyczna' },
+        { value: 'Young Adult', label: 'Młodzi Dorośli' },
+        { value: 'Non-Fiction', label: 'Literatura faktu' },
+        { value: 'Classic', label: 'Klasyka' },
+        { value: 'Biography', label: 'Biografia' },
     ];
 
-    const handleChange = (selected) => setSelectedOptions(selected);
+    const handleCoverUpload = (fileName) => {
+        setCoverFileName(fileName);
+    };
 
-    const handleImageDrop = (image) => setCoverImage(image);
+    const handleChange = (selected) => setSelectedOptions(selected);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -41,6 +49,7 @@ const SuggestBook = () => {
             releaseDate,
             categories: selectedOptions.map(option => option.value),
             description,
+            cover: coverFileName
         };
 
         try {
@@ -62,7 +71,7 @@ const SuggestBook = () => {
                         <div className='bookSuggestion'>
                             <div className='cover'>
                                 Okładka
-                                <ImageDropZone onImageDrop={handleImageDrop} />
+                                <ImageDropZone onUploadSuccess={handleCoverUpload} />
                             </div>
                             <div className='info'>
                                 <p>Tytuł <input type='text' required name='title' value={title} onChange={(e) => setTitle(e.target.value)} /></p>

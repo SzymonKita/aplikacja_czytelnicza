@@ -5,6 +5,7 @@ const bcrypt = require('bcrypt');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const path = require('path');
+const multer = require('multer');
 const app = express();
 const PORT = 5000;
 
@@ -74,6 +75,7 @@ app.post('/login', async (req, res) => {
     });
 });
 
+// Endpoint do pobierania wszystkich książek z ich kategoriami
 app.get('/books', (req, res) => {
     const query = `
         SELECT 
@@ -82,7 +84,7 @@ app.get('/books', (req, res) => {
             a.FirstName AS AuthorFirstName, 
             a.LastName AS AuthorLastName,
             p.Name AS Publisher, 
-            c.Name AS Category, 
+            GROUP_CONCAT(c.Name SEPARATOR ', ') AS Categories, 
             s.Name AS Series, 
             b.Cover, 
             b.Pages, 
@@ -92,10 +94,22 @@ app.get('/books', (req, res) => {
             Book b
         JOIN Author a ON b.AuthorID = a.ID
         JOIN Publisher p ON b.PublisherID = p.ID
-        JOIN Category c ON b.CategoryID = c.ID
+        LEFT JOIN BookCategory bc ON b.ID = bc.BookID
+        LEFT JOIN Category c ON bc.CategoryID = c.ID
         LEFT JOIN Series s ON b.SeriesID = s.ID
         WHERE 
             b.Confirmed = 1
+        GROUP BY 
+            b.ID, 
+            b.Title, 
+            a.FirstName, 
+            a.LastName, 
+            p.Name, 
+            s.Name, 
+            b.Cover, 
+            b.Pages, 
+            b.Confirmed, 
+            b.ReleaseDate
     `;
 
     db.query(query, (err, results) => {
@@ -108,36 +122,61 @@ app.get('/books', (req, res) => {
     });
 });
 
-
 app.get('/books/:id', (req, res) => {
     const bookId = req.params.id;
 
-    db.query(
-        `SELECT b.ID, b.Title, a.FirstName AS AuthorFirstName, a.LastName AS AuthorLastName, 
-                p.Name AS Publisher, c.Name AS Category, s.Name AS Series, 
-                b.Cover, b.Pages, b.Confirmed, b.ReleaseDate 
-         FROM Book b
-         JOIN Author a ON b.AuthorID = a.ID
-         JOIN Publisher p ON b.PublisherID = p.ID
-         JOIN Category c ON b.CategoryID = c.ID
-         LEFT JOIN Series s ON b.SeriesID = s.ID
-         WHERE b.ID = ?`, 
-         [bookId], 
-         (err, result) => {
-            if (err) {
-                console.error('Błąd podczas pobierania danych o książce:', err);
-                return res.status(500).json({ error: 'Błąd podczas pobierania danych o książce' });
-            }
+    const query = `
+        SELECT 
+            b.ID, 
+            b.Title, 
+            a.FirstName AS AuthorFirstName, 
+            a.LastName AS AuthorLastName, 
+            p.Name AS Publisher, 
+            GROUP_CONCAT(c.Name SEPARATOR ', ') AS Categories, 
+            s.Name AS Series, 
+            b.Cover, 
+            b.Pages, 
+            b.Confirmed, 
+            b.ReleaseDate,
+            b.Description
+        FROM 
+            Book b
+        JOIN Author a ON b.AuthorID = a.ID
+        JOIN Publisher p ON b.PublisherID = p.ID
+        LEFT JOIN BookCategory bc ON b.ID = bc.BookID
+        LEFT JOIN Category c ON bc.CategoryID = c.ID
+        LEFT JOIN Series s ON b.SeriesID = s.ID
+        WHERE 
+            b.ID = ?
+        GROUP BY 
+            b.ID, 
+            b.Title, 
+            a.FirstName, 
+            a.LastName, 
+            p.Name, 
+            s.Name, 
+            b.Cover, 
+            b.Pages, 
+            b.Confirmed, 
+            b.ReleaseDate,
+            b.Description
+    `;
 
-            if (result.length === 0) {
-                return res.status(404).json({ error: 'Książka nie znaleziona' });
-            }
-
-            const book = result[0];
-            res.status(200).json(book);
+    db.query(query, [bookId], (err, result) => {
+        if (err) {
+            console.error('Błąd podczas pobierania danych o książce:', err);
+            return res.status(500).json({ error: 'Błąd podczas pobierania danych o książce' });
         }
-    );
+
+        if (result.length === 0) {
+            return res.status(404).json({ error: 'Książka nie znaleziona' });
+        }
+
+        const book = result[0];
+        res.status(200).json(book);
+    });
 });
+
 
 // Helper function to query database with promises
 const queryDatabase = (query, params) => {
@@ -151,9 +190,9 @@ const queryDatabase = (query, params) => {
 
 app.post('/suggest-book', async (req, res) => {
     try {
-        const { title, author, publisher, category, series, releaseDate, description, pages, confirmed } = req.body;
+        const { title, author, publisher, categories, series, releaseDate, description, pages, confirmed, cover } = req.body;
 
-        // Sprawdzenie lub dodanie autora
+        // Check or add author
         let authorID;
         const authorResult = await queryDatabase('SELECT ID FROM Author WHERE FirstName = ? AND LastName = ?', [author.firstName, author.lastName]);
         if (authorResult.length > 0) {
@@ -163,7 +202,7 @@ app.post('/suggest-book', async (req, res) => {
             authorID = insertAuthorResult.insertId;
         }
 
-        // Sprawdzenie lub dodanie wydawcy
+        // Check or add publisher
         let publisherID;
         const publisherResult = await queryDatabase('SELECT ID FROM Publisher WHERE Name = ?', [publisher]);
         if (publisherResult.length > 0) {
@@ -173,49 +212,71 @@ app.post('/suggest-book', async (req, res) => {
             publisherID = insertPublisherResult.insertId;
         }
 
-        // Sprawdzenie lub dodanie kategorii
-        let categoryID;
-        const categoryResult = await queryDatabase('SELECT ID FROM Category WHERE Name = ?', [category]);
-        if (categoryResult.length > 0) {
-            categoryID = categoryResult[0].ID;
-        } else {
-            const insertCategoryResult = await queryDatabase('INSERT INTO Category (Name) VALUES (?)', [category]);
-            categoryID = insertCategoryResult.insertId;
-        }
-
-        // Sprawdzenie lub dodanie serii
+        // Check or add series
         let seriesID = null;
         if (series) {
-            const checkSeriesQuery = 'SELECT ID FROM Series WHERE Name = ?';
-            db.query(checkSeriesQuery, [series], (err, seriesResult) => {
-                if (err) return res.status(500).json({ error: 'Error checking series' });
-                seriesID = seriesResult.length > 0 ? seriesResult[0].ID : null;
-
-                if (!seriesID) {
-                    const insertSeriesQuery = 'INSERT INTO Series (Name) VALUES (?)';
-                    db.query(insertSeriesQuery, [series], (err, insertSeriesResult) => {
-                        if (err) return res.status(500).json({ error: 'Error adding series' });
-                        seriesID = insertSeriesResult.insertId;
-                    });
-                }
-            });
+            const seriesResult = await queryDatabase('SELECT ID FROM Series WHERE Name = ?', [series]);
+            if (seriesResult.length > 0) {
+                seriesID = seriesResult[0].ID;
+            } else {
+                const insertSeriesResult = await queryDatabase('INSERT INTO Series (Name) VALUES (?)', [series]);
+                seriesID = insertSeriesResult.insertId;
+            }
         }
 
-        // Dodanie książki po uzyskaniu wszystkich ID
+        // Insert the book with cover filename
         const insertBookQuery = `
-        INSERT INTO Book (Title, AuthorID, PublisherID, CategoryID, SeriesID, ReleaseDate, Description, Pages, Confirmed)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0)
+            INSERT INTO Book (Title, AuthorID, PublisherID, SeriesID, ReleaseDate, Description, Pages, Confirmed, Cover)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
-        const bookData = [title, authorID, publisherID, categoryID, seriesID, releaseDate, description, pages, confirmed];    
-        await queryDatabase(insertBookQuery, bookData);
+        const bookData = [title, authorID, publisherID, seriesID, releaseDate, description, pages, confirmed || 0, cover];
+        const bookResult = await queryDatabase(insertBookQuery, bookData);
+        const bookID = bookResult.insertId;
 
-        res.status(201).json({ message: 'Książka została dodana' });
+        // Add categories to the BookCategory join table
+        if (Array.isArray(categories) && categories.length > 0) {
+            const categoryPromises = categories.map(async (category) => {
+                let categoryID;
+                const categoryResult = await queryDatabase('SELECT ID FROM Category WHERE Name = ?', [category]);
+                if (categoryResult.length > 0) {
+                    categoryID = categoryResult[0].ID;
+                } else {
+                    const insertCategoryResult = await queryDatabase('INSERT INTO Category (Name) VALUES (?)', [category]);
+                    categoryID = insertCategoryResult.insertId;
+                }
+                return queryDatabase('INSERT INTO BookCategory (BookID, CategoryID) VALUES (?, ?)', [bookID, categoryID]);
+            });
+            await Promise.all(categoryPromises);
+        }
+
+        res.status(201).json({ message: 'Książka została dodana', bookID });
     } catch (err) {
         console.error('Błąd podczas dodawania książki:', err);
         res.status(500).json({ error: 'Błąd podczas dodawania książki' });
     }
 });
 
+
+// Configure multer for file storage
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'covers'); // Ensure this directory exists
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, uniqueSuffix + path.extname(file.originalname));
+    }
+});
+const upload = multer({ storage: storage });
+
+// Define the cover image upload route
+app.post('/upload-cover', upload.single('cover'), (req, res) => {
+    if (req.file) {
+        res.json({ fileName: req.file.filename });
+    } else {
+        res.status(400).json({ error: 'Image upload failed' });
+    }
+});
 
 
 app.listen(PORT, () => {
