@@ -1,5 +1,11 @@
 import image from '../blank-profile.png'
-const ForumComment = ({user, likes, dislikes, details}) => {
+const ForumComment = ({id, user, likes, dislikes, details}) => {
+    const toggleLike = () => {
+        // TODO: Add switching like reaction in database, using id
+    }
+    const toggleDislike = () => {
+        // TODO: Add switching dislike reaction in database, using id
+    }
     return (
         <div className='forumPost' style={{backgroundColor:'#96EFFF'}}>
             <div className='forumPostHeader'>
@@ -8,7 +14,7 @@ const ForumComment = ({user, likes, dislikes, details}) => {
                     <b>{user}</b>
                 </div>
                 <div>
-                    👍︎{likes} 👎︎{dislikes}
+                    <button type='button' className='reactionButton' onClick={() => toggleLike()}>👍︎</button>{likes} <button type='button' className='reactionButton' onClick={() => toggleDislike()}>👎︎</button>{dislikes}
                 </div>
             </div>
             <p className='forumPostDetail'>
