@@ -6,8 +6,8 @@ import './Bookshelf.css'
 const Bookshelf = () => {
     //TODO: Add getting data form database for the books and their information for progress and favurite state
     const books = [
-        { id: 1, title: 'Book1', author: 'Author1', publisher:'Publisher1', series:'Series1', releaseDate:'11.11.1111', categories:'Category1', description:'Description1', progress: 60, favourite: true},
-        { id: 2, title: 'Book2', author: 'Author2', publisher:'Publisher2', series:'Series2', releaseDate:'22.22.2222', categories:'Category2', description:'Description2', progress: 0, favourite: false},
+        { id: 1, title: 'Book1', author: 'Author1', publisher:'Publisher1', series:'Series1', releaseDate:'11.11.1111', categories:'Category1', description:'Description1', pages: 200, pagesRead:57, favourite: true},
+        { id: 2, title: 'Book2', author: 'Author2', publisher:'Publisher2', series:'Series2', releaseDate:'22.22.2222', categories:'Category2', description:'Description2', pages: 100, pagesRead:8, favourite: false},
     ];
     return (
         <>
