@@ -178,7 +178,6 @@ app.get('/books/:id', (req, res) => {
 });
 
 
-// Helper function to query database with promises
 const queryDatabase = (query, params) => {
     return new Promise((resolve, reject) => {
         db.query(query, params, (err, result) => {
@@ -192,7 +191,6 @@ app.post('/suggest-book', async (req, res) => {
     try {
         const { title, author, publisher, categories, series, releaseDate, description, pages, confirmed, cover } = req.body;
 
-        // Check or add author
         let authorID;
         const authorResult = await queryDatabase('SELECT ID FROM Author WHERE FirstName = ? AND LastName = ?', [author.firstName, author.lastName]);
         if (authorResult.length > 0) {
@@ -202,7 +200,6 @@ app.post('/suggest-book', async (req, res) => {
             authorID = insertAuthorResult.insertId;
         }
 
-        // Check or add publisher
         let publisherID;
         const publisherResult = await queryDatabase('SELECT ID FROM Publisher WHERE Name = ?', [publisher]);
         if (publisherResult.length > 0) {
@@ -212,7 +209,6 @@ app.post('/suggest-book', async (req, res) => {
             publisherID = insertPublisherResult.insertId;
         }
 
-        // Check or add series
         let seriesID = null;
         if (series) {
             const seriesResult = await queryDatabase('SELECT ID FROM Series WHERE Name = ?', [series]);
@@ -224,7 +220,6 @@ app.post('/suggest-book', async (req, res) => {
             }
         }
 
-        // Insert the book with cover filename
         const insertBookQuery = `
             INSERT INTO Book (Title, AuthorID, PublisherID, SeriesID, ReleaseDate, Description, Pages, Confirmed, Cover)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -233,7 +228,6 @@ app.post('/suggest-book', async (req, res) => {
         const bookResult = await queryDatabase(insertBookQuery, bookData);
         const bookID = bookResult.insertId;
 
-        // Add categories to the BookCategory join table
         if (Array.isArray(categories) && categories.length > 0) {
             const categoryPromises = categories.map(async (category) => {
                 let categoryID;
@@ -257,10 +251,9 @@ app.post('/suggest-book', async (req, res) => {
 });
 
 
-// Configure multer for file storage
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'covers'); // Ensure this directory exists
+        cb(null, 'covers');
     },
     filename: (req, file, cb) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
@@ -269,7 +262,6 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
-// Define the cover image upload route
 app.post('/upload-cover', upload.single('cover'), (req, res) => {
     if (req.file) {
         res.json({ fileName: req.file.filename });
@@ -278,6 +270,60 @@ app.post('/upload-cover', upload.single('cover'), (req, res) => {
     }
 });
 
+app.post('/bookshelf', (req, res) => {
+    const { userID, bookID, customPages, finished, favourite, abandoned } = req.body;
+
+    const query = `
+        INSERT INTO Bookshelf (UserID, BookID, Finished, Favourite, Abandoned, CustomPages)
+        VALUES (?, ?, ?, ?, ?, ?)
+    `;
+    
+    db.query(
+        query, 
+        [userID, bookID, finished || 0, favourite || 0, abandoned || 0, customPages || null], 
+        (err, result) => {
+            if (err) {
+                console.error('Error adding book to bookshelf:', err);
+                return res.status(500).json({ error: 'Server error' });
+            }
+            res.status(201).json({ message: 'Book added to bookshelf', bookshelfID: result.insertId });
+        }
+    );
+});
+
+app.get('/bookshelf/:userID', (req, res) => {
+    const userID = req.params.userID;
+
+    const query = `
+        SELECT 
+            b.ID, 
+            b.Title, 
+            a.FirstName AS AuthorFirstName, 
+            a.LastName AS AuthorLastName, 
+            b.Cover 
+        FROM 
+            Book b
+        JOIN Author a ON b.AuthorID = a.ID
+        JOIN Bookshelf bs ON b.ID = bs.BookID
+        WHERE 
+            bs.UserID = ?
+    `;
+
+    db.query(query, [userID], (err, result) => {
+        if (err) {
+            console.error('Błąd podczas pobierania książek z biblioteczki:', err);
+            return res.status(500).json({ error: 'Błąd podczas pobierania książek z biblioteczki' });
+        }
+
+        if (result.length === 0) {
+            return res.status(404).json({ error: 'Brak książek w biblioteczce' });
+        }
+
+        res.status(200).json(result);
+    });
+});
+
+  
 
 app.listen(PORT, () => {
     console.log(`Serwer działa na porcie ${PORT}`);

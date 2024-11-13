@@ -1,13 +1,16 @@
+import React, { useState, useEffect, useContext } from 'react';
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
 import Navigation from '../Navigation/Navigation.jsx';
 import FriendCard from '../FriendCard.jsx';
 import RatingForm from './RatingForm.jsx';
 import RatingComment from './RatingComment.jsx';
-import { useParams } from 'react-router-dom';
-import React, { useState, useEffect } from 'react';
+import { AuthContext } from '../../AuthContext';
 import "./BookInfo.css";
 
 const BookInfo = () => {
     const { id } = useParams();
+    const { userID, isLoggedIn } = useContext(AuthContext);
     const [book, setBook] = useState(null);
     const [error, setError] = useState(null);
 
@@ -31,6 +34,30 @@ const BookInfo = () => {
         fetchBook();
     }, [id]);
 
+    const addToBookshelf = async () => {
+        if (!isLoggedIn) {
+          alert("You must be logged in to add books to your bookshelf.");
+          return;
+        }
+    
+        try {
+          const response = await axios.post('http://localhost:5000/bookshelf', {
+            userID,
+            bookID: book.ID,
+            finished: 0,
+            favourite: 0,
+            abandoned: 0,
+            customPages: null
+          });
+          if (response.status === 201) {
+            alert('Book added to your bookshelf!');
+          }
+        } catch (error) {
+          console.error('Error adding book to bookshelf:', error);
+          alert('Failed to add book.');
+        }
+      };
+
     if (error) {
         return <Navigation title="Błąd" />;
     }
@@ -39,15 +66,12 @@ const BookInfo = () => {
         return <Navigation title="Ładowanie książki..." />;
     }
 
-    // Construct the path to the cover image
     const coverImagePath = `http://localhost:5000/covers/${book.Cover}`;
-
     const releaseDate = new Date(book.ReleaseDate).toLocaleDateString('pl-PL', {
         year: 'numeric',
         month: '2-digit',
         day: '2-digit',
     });
-
     const categoriesList = book.Categories ? book.Categories.split(', ') : ['Brak kategorii'];
 
     return (
@@ -57,9 +81,8 @@ const BookInfo = () => {
                 <div className='content'>
                     <div className='bookInfo'>
                         <div className='col'>
-                            {/* Display the cover image */}
                             <img src={coverImagePath} alt={`${book.Title} cover`} className='coverImage' />
-                            <p style={{ fontSize: '2em' }}>Dodaj do biblioteczki +</p>
+                            <button onClick={addToBookshelf} style={{ fontSize: '2em' }}>Dodaj do biblioteczki +</button>
                             <p>
                                 <b>Średnia ocen</b><br />
                                 0/5

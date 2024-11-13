@@ -21,11 +21,11 @@ const LoginPage = () => {
 
     if (response.ok) {
       const data = await response.json();
-      setLoginContext(data.token);
+      setLoginContext(data.token, data.user.id);
       navigate('/');
     } else {
       const errorData = await response.json();
-      alert(errorData.error || 'Błąd logowania');
+      alert(errorData.error || 'Login error');
     }
   };
 
