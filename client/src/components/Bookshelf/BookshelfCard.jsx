@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-const BookshelfCard = ({ book, progress, favourite }) => {
-    const [fav, setFav] = useState(favourite);
+const BookshelfCard = ({ book }) => {
+    const [fav, setFav] = useState(book.favourite);
     const coverImagePath = `/covers/${book.id}.png`;
     const heartIcon = ['❤︎', '♡'];
-    
+
 
     const toggleFavourite = () => {
         setFav(!fav);
@@ -22,7 +22,12 @@ const BookshelfCard = ({ book, progress, favourite }) => {
                 <p><b>Autor: </b>{book.author}</p>
                 <p><b>Wydawnictwo: </b>{book.publisher}</p>
                 <p><b>Seria: </b>{book.series}</p>
-                <p><b>Postęp: </b>{progress}%</p>
+                <p><b>Postęp: </b>{book.progress}%</p>
+                <p>
+                    <div className="progress-bar">
+                        <div className="progress-fill" style={{ width: `${book.progress}%` }}/>
+                    </div>
+                </p>
             </div>
             <div className='bookshelfButtons'>
                 <button type='button'>Rozpocznij sesję</button>

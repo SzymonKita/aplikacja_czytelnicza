@@ -4,9 +4,10 @@ import BookshelfCard from './BookshelfCard.jsx'
 import './Bookshelf.css'
 
 const Bookshelf = () => {
+    //TODO: Add getting data form database for the books and their information for progress and favurite state
     const books = [
-        { id: 1, title: 'Book1', author: 'Author1', publisher:'Publisher1', series:'Series1', releaseDate:'11.11.1111', categories:'Category1', description:'Description1'},
-        { id: 2, title: 'Book2', author: 'Author2', publisher:'Publisher2', series:'Series2', releaseDate:'22.22.2222', categories:'Category2', description:'Description2'},
+        { id: 1, title: 'Book1', author: 'Author1', publisher:'Publisher1', series:'Series1', releaseDate:'11.11.1111', categories:'Category1', description:'Description1', progress: 60, favourite: true},
+        { id: 2, title: 'Book2', author: 'Author2', publisher:'Publisher2', series:'Series2', releaseDate:'22.22.2222', categories:'Category2', description:'Description2', progress: 0, favourite: false},
     ];
     return (
         <>
@@ -21,8 +22,10 @@ const Bookshelf = () => {
                             <option vlaue='abandoned'>Opuszczone</option>
                         </select>
                     </div>
-                    <BookshelfCard book={books[0]} progress='50' favourite={true}/>
-                    <BookshelfCard book={books[1]} progress='20' favourite={false}/>
+                    {
+                        books.map((book) => (
+                            <BookshelfCard book={book}/>    
+                    ))};
                 </div>
                 <div className='friendsList'>
                     <FriendCard name='Friend 1' active={true} />

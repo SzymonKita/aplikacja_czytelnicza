@@ -9,6 +9,7 @@ import Ranking from './components/Ranking/Ranking.jsx'
 import Bookshelf from './components/Bookshelf/Bookshelf.jsx'
 import MainForum from './components/Forum/MainForum.jsx'
 import ForumPost from './components/ForumPost/ForumPost.jsx'
+import Session from './components/Session/Session.jsx'
 import { Route, Routes, Navigate } from "react-router-dom"
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
         <Route path='bookshelf' exact element={<Bookshelf/>}/>
         <Route path='forum' exact element={<MainForum/>}/>
         <Route path='forum/post/:id' element={<ForumPost/>}/>
+        <Route path='session' element={<Session/>}/>
     </Routes>
   )
 }

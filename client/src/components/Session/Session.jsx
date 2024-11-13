@@ -4,7 +4,7 @@ import FriendCard from '../FriendCard.jsx'
 const Session = () => {
     return (
         <>
-            <Navigation title="Strona główna"/>
+            <Navigation title="Sesja czytania"/>
             <div className='container'>
                 <div className='content'>
                     
