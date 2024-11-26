@@ -10,6 +10,8 @@ import Bookshelf from './components/Bookshelf/Bookshelf.jsx'
 import MainForum from './components/Forum/MainForum.jsx'
 import ForumPost from './components/ForumPost/ForumPost.jsx'
 import Session from './components/Session/Session.jsx'
+import AcceptBook from './components/AcceptBook/AcceptBook.jsx'
+import AcceptBookDetails from './components/AcceptBook/AcceptBookDetails.jsx'
 import { Route, Routes, Navigate } from "react-router-dom"
 
 function App() {
@@ -26,6 +28,8 @@ function App() {
         <Route path='forum' exact element={<MainForum/>}/>
         <Route path='forum/post/:id' element={<ForumPost/>}/>
         <Route path='session' element={<Session/>}/>
+        <Route path='acceptBook' exact element={<AcceptBook/>}/>
+        <Route path='acceptBook/:id' element={<AcceptBookDetails/>}/>
     </Routes>
   )
 }
