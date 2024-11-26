@@ -44,6 +44,7 @@ const Profile = () => {
                     title={book.Title}
                     author={`${book.AuthorFirstName} ${book.AuthorLastName}`}
                     cover={book.Cover}
+                    coverClass="small-cover"
                   />
                 ))
               ) : (

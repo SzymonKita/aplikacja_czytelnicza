@@ -1,4 +1,3 @@
-// server.js
 const express = require('express');
 const mysql = require('mysql2');
 const bcrypt = require('bcrypt');
@@ -27,6 +26,10 @@ db.connect((err) => {
         console.log('Połączono z bazą danych MySQL.');
     }
 });
+
+const formatTimestamp = (timestamp) => {
+    return new Date(timestamp).toISOString().slice(0, 19).replace('T', ' ');
+};
 
 app.post('/register', async (req, res) => {
     const { login, password, email } = req.body;
@@ -75,7 +78,6 @@ app.post('/login', async (req, res) => {
     });
 });
 
-// Endpoint do pobierania wszystkich książek z ich kategoriami
 app.get('/books', (req, res) => {
     const query = `
         SELECT 
@@ -300,7 +302,12 @@ app.get('/bookshelf/:userID', (req, res) => {
             b.Title, 
             a.FirstName AS AuthorFirstName, 
             a.LastName AS AuthorLastName, 
-            b.Cover 
+            b.Cover,
+            bs.ID as BookshelfID,
+            bs.Favourite,
+            bs.Abandoned,
+            b.Pages,
+            bs.CustomPages as PagesRead
         FROM 
             Book b
         JOIN Author a ON b.AuthorID = a.ID
@@ -323,7 +330,211 @@ app.get('/bookshelf/:userID', (req, res) => {
     });
 });
 
-  
+app.get('/api/current-session/:userID', (req, res) => {
+    const userID = req.params.userID;
+    const query = `
+        SELECT 
+            s.ID AS sessionID, 
+            bs.ID AS bookshelfID, 
+            b.ID AS bookID, 
+            b.Title, 
+            a.FirstName AS AuthorFirstName, 
+            a.LastName AS AuthorLastName, 
+            b.Pages, 
+            bs.CustomPages AS PagesRead,
+            b.Cover
+        FROM 
+            Session s
+        JOIN Bookshelf bs ON s.BookshelfID = bs.ID
+        JOIN Book b ON bs.BookID = b.ID
+        JOIN Author a ON b.AuthorID = a.ID
+        WHERE 
+            bs.UserID = ? AND s.TimeEnd IS NULL
+    `;
+
+    db.query(query, [userID], (err, result) => {
+        if (err) {
+            console.error('Błąd podczas pobierania aktualnej sesji:', err);
+            return res.status(500).json({ error: 'Błąd podczas pobierania aktualnej sesji' });
+        }
+
+        if (result.length === 0) {
+            return res.status(404).json({ error: 'Brak aktywnej sesji' });
+        }
+
+        const session = result[0];
+        res.status(200).json({
+            sessionID: session.sessionID,
+            bookshelfID: session.bookshelfID,
+            id: session.bookID,
+            title: session.Title,
+            author: `${session.AuthorFirstName} ${session.AuthorLastName}`,
+            pages: session.Pages,
+            pagesRead: session.PagesRead,
+            cover: session.Cover,
+        });
+    });
+});
+
+
+
+
+app.post('/api/sessions', (req, res) => {
+    const { bookshelfID, pagesRead, timeStart, timeEnd } = req.body;
+
+    const formatTimestamp = (timestamp) => {
+        return new Date(timestamp).toISOString().slice(0, 19).replace('T', ' ');
+    };
+
+    const timeStartFormatted = formatTimestamp(timeStart);
+    const timeEndFormatted = formatTimestamp(timeEnd);
+
+    const insertQuery = `
+        UPDATE Session
+        SET PagesRead = ?, TimeEnd = ?
+        WHERE ID = (
+        SELECT MAX(ID) FROM Session WHERE BookshelfID = ?
+        );
+    `;
+
+    const updateQuery = `
+        UPDATE Bookshelf
+        SET CustomPages = CustomPages + ?
+        WHERE ID = ?
+    `;
+
+    db.beginTransaction((err) => {
+        if (err) {
+            console.error('Błąd rozpoczęcia transakcji:', err);
+            return res.status(500).json({ error: 'Błąd zakończenia sesji' });
+        }
+
+        db.query(insertQuery, [pagesRead, timeEndFormatted,bookshelfID], (err) => {
+            if (err) {
+                return db.rollback(() => {
+                    console.error('Błąd aktualizacji sesji:', err);
+                    res.status(500).json({ error: 'Nie udało się zaktualizować sesji' });
+                });
+            }
+
+            db.query(updateQuery, [pagesRead, bookshelfID], (err) => {
+                if (err) {
+                    return db.rollback(() => {
+                        console.error('Błąd aktualizacji postępu:', err);
+                        res.status(500).json({ error: 'Nie udało się zaktualizować postępu' });
+                    });
+                }
+
+                db.commit((err) => {
+                    if (err) {
+                        return db.rollback(() => {
+                            console.error('Błąd zatwierdzania transakcji:', err);
+                            res.status(500).json({ error: 'Błąd zakończenia sesji' });
+                        });
+                    }
+
+                    res.status(200).json({ message: 'Sesja została zakończona pomyślnie' });
+                });
+            });
+        });
+    });
+});
+
+
+
+app.post('/api/start-session', (req, res) => {
+    const { bookshelfID, bookID, timeStart } = req.body;
+
+    const query = `
+        INSERT INTO Session (BookshelfID, BookID, TimeStart)
+        VALUES (?, ?, ?)
+    `;
+
+    db.query(query, [bookshelfID, bookID, timeStart], (err, result) => {
+        if (err) {
+            console.error('Błąd rozpoczęcia sesji:', err);
+            return res.status(500).json({ error: 'Nie udało się rozpocząć sesji' });
+        }
+
+        res.status(201).json({ message: 'Sesja została rozpoczęta', sessionID: result.insertId });
+    });
+});
+
+
+app.put('/api/end-session/:sessionID', (req, res) => {
+    const { sessionID } = req.params;
+    const { timeEnd, pagesRead } = req.body;
+
+    const query = `
+        UPDATE Session 
+        SET TimeEnd = ?, PagesRead = ?
+        WHERE ID = ? AND TimeEnd IS NULL
+    `;
+
+    db.query(query, [timeEnd, pagesRead, sessionID], (err, result) => {
+        if (err) {
+            console.error('Błąd zamykania sesji:', err);
+            return res.status(500).json({ error: 'Nie udało się zamknąć sesji' });
+        }
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'Nie znaleziono aktywnej sesji' });
+        }
+
+        res.status(200).json({ message: 'Sesja została zamknięta' });
+    });
+});
+
+app.get('/api/check-session/:bookshelfID', (req, res) => {
+    const { bookshelfID } = req.params;
+
+    const query = `
+        SELECT ID 
+        FROM Session
+        WHERE BookshelfID = ? AND TimeEnd IS NULL
+    `;
+
+    db.query(query, [bookshelfID], (err, result) => {
+        if (err) {
+            console.error('Błąd sprawdzania sesji:', err);
+            return res.status(500).json({ error: 'Błąd sprawdzania statusu sesji' });
+        }
+
+        if (result.length === 0) {
+            return res.status(200).json({ active: false });
+        }
+
+        res.status(200).json({ active: true, sessionID: result[0].ID });
+    });
+});
+
+app.put('/api/update-favourite', (req, res) => {
+    const { bookshelfID, favourite } = req.body;
+
+    const query = `UPDATE Bookshelf SET favourite = ? WHERE ID = ?`;
+    db.query(query, [favourite, bookshelfID], (err, result) => {
+        if (err) {
+            console.error('Błąd podczas aktualizacji statusu:', err);
+            return res.status(500).send({ message: 'Błąd serwera' });
+        }
+
+        res.status(200).send({ message: 'Status książki zaktualizowany pomyślnie' });
+    });
+});
+
+app.put('/api/update-abandoned', (req, res) => {
+    const { bookshelfID, abandoned } = req.body;
+
+    const query = `UPDATE Bookshelf SET abandoned = ? WHERE ID = ?`;
+    db.query(query, [abandoned, bookshelfID], (err, result) => {
+        if (err) {
+            console.error('Błąd podczas aktualizacji statusu:', err);
+            return res.status(500).send({ message: 'Błąd serwera' });
+        }
+
+        res.status(200).send({ message: 'Status książki zaktualizowany pomyślnie' });
+    });
+});
 
 app.listen(PORT, () => {
     console.log(`Serwer działa na porcie ${PORT}`);

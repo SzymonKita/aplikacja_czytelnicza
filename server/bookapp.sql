@@ -1,14 +1,13 @@
 -- phpMyAdmin SQL Dump
--- version 4.9.2
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Czas generowania: 12 Lis 2024, 20:53
--- Wersja serwera: 10.4.11-MariaDB
--- Wersja PHP: 7.4.1
+-- Generation Time: Lis 26, 2024 at 08:16 PM
+-- Wersja serwera: 10.4.28-MariaDB
+-- Wersja PHP: 8.2.4
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
@@ -19,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Baza danych: `bookapp`
+-- Database: `bookapp`
 --
 
 -- --------------------------------------------------------
@@ -32,7 +31,7 @@ CREATE TABLE `achievement` (
   `ID` int(11) NOT NULL,
   `Name` varchar(50) DEFAULT NULL,
   `Description` varchar(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -44,10 +43,10 @@ CREATE TABLE `author` (
   `ID` int(11) NOT NULL,
   `FirstName` varchar(50) DEFAULT NULL,
   `LastName` varchar(50) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Zrzut danych tabeli `author`
+-- Dumping data for table `author`
 --
 
 INSERT INTO `author` (`ID`, `FirstName`, `LastName`) VALUES
@@ -81,10 +80,10 @@ CREATE TABLE `book` (
   `Title` varchar(255) NOT NULL,
   `ReleaseDate` date DEFAULT NULL,
   `Description` text DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Zrzut danych tabeli `book`
+-- Dumping data for table `book`
 --
 
 INSERT INTO `book` (`ID`, `AuthorID`, `PublisherID`, `SeriesID`, `Cover`, `Pages`, `Confirmed`, `Title`, `ReleaseDate`, `Description`) VALUES
@@ -109,10 +108,10 @@ INSERT INTO `book` (`ID`, `AuthorID`, `PublisherID`, `SeriesID`, `Cover`, `Pages
 CREATE TABLE `bookcategory` (
   `BookID` int(11) DEFAULT NULL,
   `CategoryID` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Zrzut danych tabeli `bookcategory`
+-- Dumping data for table `bookcategory`
 --
 
 INSERT INTO `bookcategory` (`BookID`, `CategoryID`) VALUES
@@ -144,7 +143,16 @@ CREATE TABLE `bookshelf` (
   `Favourite` tinyint(1) DEFAULT NULL,
   `Abandoned` tinyint(1) DEFAULT NULL,
   `CustomPages` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `bookshelf`
+--
+
+INSERT INTO `bookshelf` (`ID`, `UserID`, `BookID`, `Finished`, `Favourite`, `Abandoned`, `CustomPages`) VALUES
+(1, 1, 2, 0, 0, 0, 112),
+(2, 1, 26, 0, 1, 0, 1098),
+(3, 2, 8, 0, 0, 0, 100);
 
 -- --------------------------------------------------------
 
@@ -155,10 +163,10 @@ CREATE TABLE `bookshelf` (
 CREATE TABLE `category` (
   `ID` int(11) NOT NULL,
   `Name` varchar(50) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Zrzut danych tabeli `category`
+-- Dumping data for table `category`
 --
 
 INSERT INTO `category` (`ID`, `Name`) VALUES
@@ -184,7 +192,7 @@ CREATE TABLE `comments` (
   `PostID` int(11) DEFAULT NULL,
   `UserID` int(11) DEFAULT NULL,
   `Detail` text DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -196,7 +204,7 @@ CREATE TABLE `friendlist` (
   `RequesterID` int(11) NOT NULL,
   `AddresseeID` int(11) NOT NULL,
   `Confirmed` tinyint(1) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -209,7 +217,7 @@ CREATE TABLE `post` (
   `Title` text DEFAULT NULL,
   `UserID` int(11) DEFAULT NULL,
   `Detail` text DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -220,10 +228,10 @@ CREATE TABLE `post` (
 CREATE TABLE `publisher` (
   `ID` int(11) NOT NULL,
   `Name` varchar(100) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Zrzut danych tabeli `publisher`
+-- Dumping data for table `publisher`
 --
 
 INSERT INTO `publisher` (`ID`, `Name`) VALUES
@@ -251,7 +259,7 @@ CREATE TABLE `quote` (
   `UserID` int(11) DEFAULT NULL,
   `BookID` int(11) DEFAULT NULL,
   `Detail` text DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -265,7 +273,7 @@ CREATE TABLE `review` (
   `UserID` int(11) DEFAULT NULL,
   `Rating` int(11) DEFAULT NULL,
   `Detail` text DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -276,10 +284,10 @@ CREATE TABLE `review` (
 CREATE TABLE `series` (
   `ID` int(11) NOT NULL,
   `Name` varchar(50) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Zrzut danych tabeli `series`
+-- Dumping data for table `series`
 --
 
 INSERT INTO `series` (`ID`, `Name`) VALUES
@@ -307,8 +315,28 @@ CREATE TABLE `session` (
   `BookshelfID` int(11) DEFAULT NULL,
   `PagesRead` int(11) DEFAULT NULL,
   `TimeStart` datetime DEFAULT NULL,
-  `TimeEnd` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  `TimeEnd` datetime DEFAULT NULL,
+  `BookID` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `session`
+--
+
+INSERT INTO `session` (`ID`, `BookshelfID`, `PagesRead`, `TimeStart`, `TimeEnd`, `BookID`) VALUES
+(45, 2, 12, '2024-11-20 11:03:58', '2024-11-20 11:04:00', 26),
+(46, 1, 11, '2024-11-20 11:04:28', '2024-11-20 11:04:31', 2),
+(50, 2, 10, '2024-11-20 12:10:29', '2024-11-20 12:10:40', 26),
+(51, 2, 1, '2024-11-20 12:10:42', '2024-11-20 12:12:33', 26),
+(52, 2, 1, '2024-11-20 12:12:35', '2024-11-20 12:12:36', 26),
+(54, 2, 1, '2024-11-20 12:16:42', '2024-11-20 12:17:34', 26),
+(55, 1, 1, '2024-11-20 12:17:36', '2024-11-20 12:17:38', 2),
+(56, 2, 1, '2024-11-20 12:17:46', '2024-11-20 12:21:50', 26),
+(57, 2, 1, '2024-11-20 12:21:56', '2024-11-20 12:22:00', 26),
+(58, 2, 1, '2024-11-20 13:37:53', '2024-11-20 13:37:56', 26),
+(59, 2, 0, '2024-11-20 13:38:42', '2024-11-20 13:39:28', 26),
+(61, 2, 1, '2024-11-20 13:48:55', '2024-11-20 13:49:23', 26),
+(62, 2, 1, '2024-11-20 15:01:50', '2024-11-20 15:02:00', 26);
 
 -- --------------------------------------------------------
 
@@ -321,7 +349,7 @@ CREATE TABLE `statistics` (
   `UserID` int(11) DEFAULT NULL,
   `ReadingSpeed` float DEFAULT NULL,
   `TotalTime` float DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -338,14 +366,15 @@ CREATE TABLE `user` (
   `Admin` tinyint(1) DEFAULT NULL,
   `Status` enum('active','inactive') DEFAULT NULL,
   `LastOnline` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Zrzut danych tabeli `user`
+-- Dumping data for table `user`
 --
 
 INSERT INTO `user` (`ID`, `login`, `password`, `email`, `Activated`, `Admin`, `Status`, `LastOnline`) VALUES
-(1, 'test', '$2b$10$PXB.TaZvAfm8Izx/3qMFxe8T9dAV63EEGxRVQuKoMBAjy.teqSzY6', 'test@test.pl', 1, 0, 'active', '2024-11-03 23:42:09');
+(1, 'test', '$2b$10$PXB.TaZvAfm8Izx/3qMFxe8T9dAV63EEGxRVQuKoMBAjy.teqSzY6', 'test@test.pl', 1, 0, 'active', '2024-11-03 23:42:09'),
+(2, 'admin', '$2b$10$IMMv4eFJTGB1.vCbsUGuou7inKXRek4jVPFtaPZITi.uoXV0oGD/6', 'admin@admin', 1, 0, 'active', '2024-11-19 01:08:53');
 
 --
 -- Indeksy dla zrzutów tabel
@@ -448,7 +477,8 @@ ALTER TABLE `series`
 --
 ALTER TABLE `session`
   ADD PRIMARY KEY (`ID`),
-  ADD KEY `BookshelfID` (`BookshelfID`);
+  ADD KEY `BookshelfID` (`BookshelfID`),
+  ADD KEY `fk_session_book` (`BookID`);
 
 --
 -- Indeksy dla tabeli `statistics`
@@ -464,99 +494,99 @@ ALTER TABLE `user`
   ADD PRIMARY KEY (`ID`);
 
 --
--- AUTO_INCREMENT dla tabel zrzutów
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT dla tabeli `achievement`
+-- AUTO_INCREMENT for table `achievement`
 --
 ALTER TABLE `achievement`
   MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT dla tabeli `author`
+-- AUTO_INCREMENT for table `author`
 --
 ALTER TABLE `author`
   MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
--- AUTO_INCREMENT dla tabeli `book`
+-- AUTO_INCREMENT for table `book`
 --
 ALTER TABLE `book`
   MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
--- AUTO_INCREMENT dla tabeli `bookshelf`
+-- AUTO_INCREMENT for table `bookshelf`
 --
 ALTER TABLE `bookshelf`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT dla tabeli `category`
+-- AUTO_INCREMENT for table `category`
 --
 ALTER TABLE `category`
   MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
--- AUTO_INCREMENT dla tabeli `comments`
+-- AUTO_INCREMENT for table `comments`
 --
 ALTER TABLE `comments`
   MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT dla tabeli `post`
+-- AUTO_INCREMENT for table `post`
 --
 ALTER TABLE `post`
   MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT dla tabeli `publisher`
+-- AUTO_INCREMENT for table `publisher`
 --
 ALTER TABLE `publisher`
   MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
--- AUTO_INCREMENT dla tabeli `quote`
+-- AUTO_INCREMENT for table `quote`
 --
 ALTER TABLE `quote`
   MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT dla tabeli `review`
+-- AUTO_INCREMENT for table `review`
 --
 ALTER TABLE `review`
   MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT dla tabeli `series`
+-- AUTO_INCREMENT for table `series`
 --
 ALTER TABLE `series`
   MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
--- AUTO_INCREMENT dla tabeli `session`
+-- AUTO_INCREMENT for table `session`
 --
 ALTER TABLE `session`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=63;
 
 --
--- AUTO_INCREMENT dla tabeli `statistics`
+-- AUTO_INCREMENT for table `statistics`
 --
 ALTER TABLE `statistics`
   MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT dla tabeli `user`
+-- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- Ograniczenia dla zrzutów tabel
+-- Constraints for dumped tables
 --
 
 --
--- Ograniczenia dla tabeli `book`
+-- Constraints for table `book`
 --
 ALTER TABLE `book`
   ADD CONSTRAINT `book_ibfk_1` FOREIGN KEY (`AuthorID`) REFERENCES `author` (`ID`),
@@ -564,61 +594,62 @@ ALTER TABLE `book`
   ADD CONSTRAINT `book_ibfk_4` FOREIGN KEY (`SeriesID`) REFERENCES `series` (`ID`);
 
 --
--- Ograniczenia dla tabeli `bookcategory`
+-- Constraints for table `bookcategory`
 --
 ALTER TABLE `bookcategory`
   ADD CONSTRAINT `bookcategory_ibfk_1` FOREIGN KEY (`BookID`) REFERENCES `book` (`ID`),
   ADD CONSTRAINT `bookcategory_ibfk_2` FOREIGN KEY (`CategoryID`) REFERENCES `category` (`ID`);
 
 --
--- Ograniczenia dla tabeli `bookshelf`
+-- Constraints for table `bookshelf`
 --
 ALTER TABLE `bookshelf`
   ADD CONSTRAINT `bookshelf_ibfk_1` FOREIGN KEY (`UserID`) REFERENCES `user` (`ID`),
   ADD CONSTRAINT `bookshelf_ibfk_2` FOREIGN KEY (`BookID`) REFERENCES `book` (`ID`);
 
 --
--- Ograniczenia dla tabeli `comments`
+-- Constraints for table `comments`
 --
 ALTER TABLE `comments`
   ADD CONSTRAINT `comments_ibfk_1` FOREIGN KEY (`PostID`) REFERENCES `post` (`ID`),
   ADD CONSTRAINT `comments_ibfk_2` FOREIGN KEY (`UserID`) REFERENCES `user` (`ID`);
 
 --
--- Ograniczenia dla tabeli `friendlist`
+-- Constraints for table `friendlist`
 --
 ALTER TABLE `friendlist`
   ADD CONSTRAINT `friendlist_ibfk_1` FOREIGN KEY (`RequesterID`) REFERENCES `user` (`ID`),
   ADD CONSTRAINT `friendlist_ibfk_2` FOREIGN KEY (`AddresseeID`) REFERENCES `user` (`ID`);
 
 --
--- Ograniczenia dla tabeli `post`
+-- Constraints for table `post`
 --
 ALTER TABLE `post`
   ADD CONSTRAINT `post_ibfk_1` FOREIGN KEY (`UserID`) REFERENCES `user` (`ID`);
 
 --
--- Ograniczenia dla tabeli `quote`
+-- Constraints for table `quote`
 --
 ALTER TABLE `quote`
   ADD CONSTRAINT `quote_ibfk_1` FOREIGN KEY (`UserID`) REFERENCES `user` (`ID`),
   ADD CONSTRAINT `quote_ibfk_2` FOREIGN KEY (`BookID`) REFERENCES `book` (`ID`);
 
 --
--- Ograniczenia dla tabeli `review`
+-- Constraints for table `review`
 --
 ALTER TABLE `review`
   ADD CONSTRAINT `review_ibfk_1` FOREIGN KEY (`BookID`) REFERENCES `book` (`ID`),
   ADD CONSTRAINT `review_ibfk_2` FOREIGN KEY (`UserID`) REFERENCES `user` (`ID`);
 
 --
--- Ograniczenia dla tabeli `session`
+-- Constraints for table `session`
 --
 ALTER TABLE `session`
+  ADD CONSTRAINT `fk_session_book` FOREIGN KEY (`BookID`) REFERENCES `book` (`ID`),
   ADD CONSTRAINT `session_ibfk_1` FOREIGN KEY (`BookshelfID`) REFERENCES `bookshelf` (`ID`);
 
 --
--- Ograniczenia dla tabeli `statistics`
+-- Constraints for table `statistics`
 --
 ALTER TABLE `statistics`
   ADD CONSTRAINT `statistics_ibfk_1` FOREIGN KEY (`UserID`) REFERENCES `user` (`ID`);

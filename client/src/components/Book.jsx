@@ -6,9 +6,14 @@ const Book = (props) => {
     return (
         <Link to={`/book/${props.id}`}>
             <div className='book'>
-                <img src={coverImagePath} alt={props.title} className='bookImage' />
-                <p>{props.title}</p>
-                <p>{props.author}</p>
+            <img 
+            src={coverImagePath} 
+            alt={props.title} 
+            className='small-cover' 
+            style={{ width: '150px', height: '200px' }} 
+            />
+            <p>{props.title}</p>
+            <p>{props.author}</p>
             </div>
         </Link>
     );
