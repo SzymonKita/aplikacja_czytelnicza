@@ -21,7 +21,7 @@ const LoginPage = () => {
 
     if (response.ok) {
       const data = await response.json();
-      setLoginContext(data.token, data.user.id);
+      setLoginContext(data.token, data.user.id, data.user.admin);
       navigate('/');
     } else {
       const errorData = await response.json();

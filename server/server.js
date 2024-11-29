@@ -72,9 +72,21 @@ app.post('/login', async (req, res) => {
             return res.status(400).json({ error: 'Nieprawidłowy login lub hasło' });
         }
 
-        const token = jwt.sign({ id: user.ID, login: user.login }, 'sekretny_klucz', { expiresIn: '1h' });
-
-        res.status(200).json({ message: 'Logowanie zakończone sukcesem', token, user: { id: user.ID, login: user.login, email: user.email } });
+        const token = jwt.sign(
+            { 
+                id: user.ID, 
+                login: user.login, 
+                email: user.email, 
+                admin: user.Admin
+            }, 
+            'sekretny_klucz', 
+            { expiresIn: '1h' }
+        );
+        res.status(200).json({ 
+            message: 'Logowanie zakończone sukcesem', 
+            token, 
+            user: { id: user.ID, login: user.login, email: user.email, admin: user.Admin}
+        });
     });
 });
 
@@ -101,6 +113,53 @@ app.get('/books', (req, res) => {
         LEFT JOIN Series s ON b.SeriesID = s.ID
         WHERE 
             b.Confirmed = 1
+        GROUP BY 
+            b.ID, 
+            b.Title, 
+            a.FirstName, 
+            a.LastName, 
+            p.Name, 
+            s.Name, 
+            b.Cover, 
+            b.Pages, 
+            b.Confirmed, 
+            b.ReleaseDate
+    `;
+
+    db.query(query, (err, results) => {
+        if (err) {
+            console.error('Błąd podczas pobierania książek:', err);
+            return res.status(500).json({ error: 'Błąd serwera' });
+        }
+
+        res.json(results);
+    });
+});
+
+app.get('/books/pending', (req, res) => {
+    const query = `
+        SELECT 
+            b.ID, 
+            b.Title, 
+            a.FirstName AS AuthorFirstName, 
+            a.LastName AS AuthorLastName,
+            p.Name AS Publisher, 
+            GROUP_CONCAT(c.Name SEPARATOR ', ') AS Categories, 
+            s.Name AS Series, 
+            b.Cover, 
+            b.Pages, 
+            b.Confirmed, 
+            b.ReleaseDate,
+            b.Description
+        FROM 
+            Book b
+        JOIN Author a ON b.AuthorID = a.ID
+        JOIN Publisher p ON b.PublisherID = p.ID
+        LEFT JOIN BookCategory bc ON b.ID = bc.BookID
+        LEFT JOIN Category c ON bc.CategoryID = c.ID
+        LEFT JOIN Series s ON b.SeriesID = s.ID
+        WHERE 
+            b.Confirmed = 0
         GROUP BY 
             b.ID, 
             b.Title, 
@@ -535,6 +594,31 @@ app.put('/api/update-abandoned', (req, res) => {
         res.status(200).send({ message: 'Status książki zaktualizowany pomyślnie' });
     });
 });
+
+app.put('/api/books/:bookId/approve', (req, res) => {
+    const { bookId } = req.params;
+
+    const query = `
+        UPDATE Book 
+        SET Confirmed = 1 
+        WHERE ID = ? AND Confirmed = 0
+    `;
+
+    db.query(query, [bookId], (err, result) => {
+        if (err) {
+            console.error('Błąd zatwierdzania książki:', err);
+            return res.status(500).json({ error: 'Nie udało się zatwierdzić książki' });
+        }
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'Nie znaleziono książki do zatwierdzenia lub już została zatwierdzona' });
+        }
+
+        res.status(200).json({ message: 'Książka została zatwierdzona' });
+    });
+});
+
+
 
 app.listen(PORT, () => {
     console.log(`Serwer działa na porcie ${PORT}`);

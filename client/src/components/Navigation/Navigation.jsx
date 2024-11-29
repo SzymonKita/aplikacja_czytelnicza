@@ -5,8 +5,8 @@ import { AuthContext } from "../../AuthContext";
 import "./Navigation.css";
 
 const Navigation = (props) => {
-    const { isLoggedIn } = useContext(AuthContext);
-
+    const { isLoggedIn, isAdmin } = useContext(AuthContext);
+    console.log("User is admin: ", isAdmin, isLoggedIn);
     return (
         <>
             <nav>
@@ -18,12 +18,12 @@ const Navigation = (props) => {
                 </div>
 
                 <div className="right-group">
-                    <RightGroup isLoggedIn={isLoggedIn} /> {}
+                    <RightGroup isLoggedIn={isLoggedIn} isAdmin={isAdmin} />
                 </div>
             </nav>
             <h1>{props.title}</h1>
         </>
     );
-}
+};
 
 export default Navigation;

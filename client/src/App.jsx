@@ -8,6 +8,8 @@ import BookInfo from './components/BookInfo/BookInfo.jsx'
 import SuggestBook from './components/SuggestBook/SuggestBook.jsx'
 import Bookshelf from './components/Bookshelf/Bookshelf.jsx'
 import Session from './components/Session/Session.jsx'
+import AcceptBook from './components/AcceptBook/AcceptBook.jsx'
+import AcceptBookDetails from './components/AcceptBook/AcceptBookDetails.jsx'
 import { Route, Routes, Navigate } from "react-router-dom"
 import { AuthProvider } from './AuthContext';
 
@@ -25,6 +27,8 @@ function App() {
         <Route path='bookshelf' exact element={<Bookshelf/>}/>
         <Route path='session' element={<Session/>}/>
         <Route path="/session/:bookshelfID" element={<Session />} />
+        <Route path='acceptBook' exact element={<AcceptBook/>}/>
+        <Route path='acceptBook/:bookid' element={<AcceptBookDetails/>}/>
     </Routes>
     </AuthProvider>
   );
