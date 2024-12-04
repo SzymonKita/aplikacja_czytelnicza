@@ -199,7 +199,8 @@ app.get('/books/:id', (req, res) => {
             b.Pages, 
             b.Confirmed, 
             b.ReleaseDate,
-            b.Description
+            b.Description,
+            c.Name as Categories
         FROM 
             Book b
         JOIN Author a ON b.AuthorID = a.ID
@@ -595,7 +596,103 @@ app.put('/api/update-abandoned', (req, res) => {
     });
 });
 
-app.put('/api/books/:bookId/approve', (req, res) => {
+app.put('/books/:bookId/approve', (req, res) => {
+    const { bookId } = req.params;
+    const {
+        title,
+        author,
+        publisher,
+        series,
+        releaseDate,
+        description,
+        pages,
+        cover,
+        categories
+    } = req.body;
+
+    const updateBookQuery = `
+        UPDATE Book 
+        SET 
+            Title = ?, 
+            Author = ?, 
+            Publisher = ?, 
+            Series = ?, 
+            ReleaseDate = ?, 
+            Description = ?, 
+            Pages = ?, 
+            Cover = ?, 
+            Confirmed = 1 
+        WHERE ID = ? AND Confirmed = 0
+    `;
+
+    db.beginTransaction(err => {
+        if (err) {
+            console.error('Błąd rozpoczynania transakcji:', err);
+            return res.status(500).json({ error: 'Nie udało się zatwierdzić książki' });
+        }
+
+        
+        db.query(updateBookQuery, [title, author, publisher, series, releaseDate, description, pages, cover, bookId], (err, result) => {
+            if (err) {
+                console.error('Błąd aktualizacji książki:', err);
+                return db.rollback(() => {
+                    res.status(500).json({ error: 'Nie udało się zatwierdzić książki' });
+                });
+            }
+
+            
+            const deleteCategoriesQuery = `DELETE FROM BookCategories WHERE BookID = ?`;
+            db.query(deleteCategoriesQuery, [bookId], (err) => {
+                if (err) {
+                    console.error('Błąd usuwania kategorii:', err);
+                    return db.rollback(() => {
+                        res.status(500).json({ error: 'Nie udało się zatwierdzić książki' });
+                    });
+                }
+
+                
+                if (categories.length > 0) {
+                    const insertCategoriesQuery = `INSERT INTO bookcategory (BookID, CategoryID) VALUES ?`;
+                    const categoryValues = categories.map(categoryId => [bookId, categoryId]);
+
+                    db.query(insertCategoriesQuery, [categoryValues], (err) => {
+                        if (err) {
+                            console.error('Błąd dodawania kategorii:', err);
+                            return db.rollback(() => {
+                                res.status(500).json({ error: 'Nie udało się zatwierdzić książki' });
+                            });
+                        }
+
+                        db.commit(err => {
+                            if (err) {
+                                console.error('Błąd zatwierdzania transakcji:', err);
+                                return db.rollback(() => {
+                                    res.status(500).json({ error: 'Nie udało się zatwierdzić książki' });
+                                });
+                            }
+
+                            res.status(200).json({ message: 'Książka została zatwierdzona' });
+                        });
+                    });
+                } else {
+                    
+                    db.commit(err => {
+                        if (err) {
+                            console.error('Błąd zatwierdzania transakcji:', err);
+                            return db.rollback(() => {
+                                res.status(500).json({ error: 'Nie udało się zatwierdzić książki' });
+                            });
+                        }
+
+                        res.status(200).json({ message: 'Książka została zatwierdzona' });
+                    });
+                }
+            });
+        });
+    });
+});
+
+app.put('/books/:bookId/confirm', (req, res) => {
     const { bookId } = req.params;
 
     const query = `
@@ -617,6 +714,7 @@ app.put('/api/books/:bookId/approve', (req, res) => {
         res.status(200).json({ message: 'Książka została zatwierdzona' });
     });
 });
+
 
 
 

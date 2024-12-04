@@ -35,29 +35,40 @@ const AcceptBookDetails = () => {
         categories: []
     });
 
-    // Pobierz dane książki z API
     useEffect(() => {
         const fetchBook = async () => {
             try {
                 const response = await axios.get(`http://localhost:5000/books/${bookId}`);
                 const bookData = response.data;
+                const categoriesArray = bookData.Categories
+                    ? bookData.Categories.split(',').map(category => ({
+                        value: category.trim(),
+                        label: category.trim(),
+                    }))
+                    : [];
+                const formattedDate = new Date(bookData.ReleaseDate).toISOString().split('T')[0];
+    
                 setFormData({
                     title: bookData.Title,
-                    author: `${bookData.AuthorFirstName} ${bookData.AuthorLastName}`, // Łączenie imienia i nazwiska
+                    author: `${bookData.AuthorFirstName} ${bookData.AuthorLastName}`,
                     publisher: bookData.Publisher,
                     series: bookData.Series,
-                    releaseDate: bookData.ReleaseDate,
+                    releaseDate: formattedDate,
                     description: bookData.Description,
                     pages: bookData.Pages,
                     cover: bookData.Cover,
+                    categories: categoriesArray,
                 });
             } catch (error) {
                 console.error("Błąd wczytywania danych książki:", error);
             }
         };
-
+    
         fetchBook();
     }, [bookId]);
+    
+
+    
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -76,29 +87,33 @@ const AcceptBookDetails = () => {
 
     const handleConfirm = async (e) => {
         e.preventDefault();
-
+    
         const updatedData = {
-            ...formData,
+            title: formData.title,
+            author: formData.author,
+            publisher: formData.publisher,
+            series: formData.series || null,
+            releaseDate: formData.releaseDate,
+            description: formData.description,
+            pages: formData.pages,
+            cover: formData.cover,
             categories: formData.categories.map(option => option.value),
         };
-
+    
         try {
-            await axios.post(`/api/books/${bookId}/approve`, updatedData);
+            await axios.put(`http://localhost:5000/books/${bookId}/confirm`, updatedData);
             alert("Książka została zaakceptowana!");
             navigate('/acceptBook');
         } catch (error) {
             console.error("Błąd zatwierdzania książki:", error);
+            alert("Wystąpił błąd podczas zatwierdzania książki.");
         }
     };
+    
+    
 
     const handleDeny = async () => {
-        try {
-            await axios.delete(`/api/books/${bookId}`);
-            alert("Książka została odrzucona.");
-            navigate('/acceptBook');
-        } catch (error) {
-            console.error("Błąd odrzucania książki:", error);
-        }
+        navigate('/acceptBook')
     };
 
     if (!formData.title) return <p>Wczytywanie danych...</p>;

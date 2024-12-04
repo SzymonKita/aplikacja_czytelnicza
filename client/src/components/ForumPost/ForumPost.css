@@ -1,0 +1,33 @@
+.forumPost{
+    background-color: #6AD4DD;
+    border: 1px solid #797979;
+    border-radius: 8px;
+    margin: 10px 0;
+}
+
+.forumPostHeader{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 10px;
+}
+
+.forumPostUser{
+    display: flex;
+    align-items: center;
+}
+
+.forumPostDetail{
+    text-align: justify;
+    padding: 5px
+}
+
+.reactionButton{
+    border: none;
+    font-size: 1em;
+    padding: 0;
+}
+
+.reactionButton:hover{
+    color: blue;
+}

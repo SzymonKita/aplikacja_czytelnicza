@@ -6,15 +6,14 @@ import "./Navigation.css";
 
 const Navigation = (props) => {
     const { isLoggedIn, isAdmin } = useContext(AuthContext);
-    console.log("User is admin: ", isAdmin, isLoggedIn);
     return (
         <>
             <nav>
                 <div className="left-group">
                     <Link to="/"><button type="button">Strona główna</button></Link>
                     <Link to="/booklist"><button type="button">Książki</button></Link>
-                    <button type="button">Forum</button>
-                    <button type="button">Ranking</button>
+                    <Link to="/forum"><button type="button">Forum</button></Link>
+                    <Link to="/ranking"><button type="button">Ranking</button></Link>
                 </div>
 
                 <div className="right-group">

@@ -6,7 +6,7 @@ const RightGroup = ({ isLoggedIn, isAdmin }) => {
             <>
                 <Link to='/bookshelf'><button type="button">Biblioteczka</button></Link>
                 <Link to='/profile'><button type="button" id="test">Profil</button></Link>
-                {isAdmin && <Link to='/acceptBook'><button type="button">Akceptacja książek</button></Link>}
+                {isAdmin === 1 && <Link to='/acceptBook'><button type="button">Akceptacja książek</button></Link>}
             </>
         );
     } else {

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Lis 26, 2024 at 08:16 PM
+-- Generation Time: Dec 04, 2024 at 02:35 PM
 -- Wersja serwera: 10.4.28-MariaDB
 -- Wersja PHP: 8.2.4
 
@@ -90,13 +90,13 @@ INSERT INTO `book` (`ID`, `AuthorID`, `PublisherID`, `SeriesID`, `Cover`, `Pages
 (1, 1, 1, 1, 'cover1.jpg', 350, 1, '1984', '2001-01-01', NULL),
 (2, 2, 2, 2, 'cover2.jpg', 420, 1, 'Harry Potter and the Philosopher\'s Stone', '2002-02-02', NULL),
 (3, 3, 3, NULL, 'cover3.jpg', 280, 1, 'Foundation', '2003-03-03', NULL),
-(4, 4, 4, 3, 'cover4.jpg', 500, 0, 'Pride and Prejudice', '2004-04-04', NULL),
+(4, 4, 4, 3, 'cover4.jpg', 500, 1, 'Pride and Prejudice', '2004-04-04', NULL),
 (5, 1, 1, NULL, 'cover5.jpg', 150, 1, 'Animal Farm', '2005-05-05', NULL),
 (6, 5, 2, NULL, 'cover6.jpg', 320, 1, 'The Shining', '2006-06-06', NULL),
-(7, 6, 3, 4, 'cover7.jpg', 410, 0, 'Murder on the Orient Express', '2007-07-07', NULL),
+(7, 6, 3, 4, 'cover7.jpg', 410, 1, 'Murder on the Orient Express', '2007-07-07', NULL),
 (8, 7, 4, 5, 'cover8.jpg', 390, 1, 'The Fellowship of the Ring', '2008-08-08', NULL),
 (9, 8, 5, NULL, 'cover9.jpg', 200, 1, 'The Great Gatsby', '2009-09-09', NULL),
-(10, 3, 2, 6, 'cover10.jpg', 340, 1, 'I, Robot', '2010-10-10', NULL),
+(10, 3, 2, 6, 'cover10.jpg', 340, 0, 'I, Robot', '2010-10-10', NULL),
 (26, 22, 17, 16, '1731438989759-383566951.jpg', 1234, 1, 'kot', '2024-11-12', 'kici');
 
 -- --------------------------------------------------------
@@ -152,7 +152,7 @@ CREATE TABLE `bookshelf` (
 INSERT INTO `bookshelf` (`ID`, `UserID`, `BookID`, `Finished`, `Favourite`, `Abandoned`, `CustomPages`) VALUES
 (1, 1, 2, 0, 0, 0, 112),
 (2, 1, 26, 0, 1, 0, 1098),
-(3, 2, 8, 0, 0, 0, 100);
+(3, 2, 8, 0, 0, 0, 111);
 
 -- --------------------------------------------------------
 
@@ -336,7 +336,8 @@ INSERT INTO `session` (`ID`, `BookshelfID`, `PagesRead`, `TimeStart`, `TimeEnd`,
 (58, 2, 1, '2024-11-20 13:37:53', '2024-11-20 13:37:56', 26),
 (59, 2, 0, '2024-11-20 13:38:42', '2024-11-20 13:39:28', 26),
 (61, 2, 1, '2024-11-20 13:48:55', '2024-11-20 13:49:23', 26),
-(62, 2, 1, '2024-11-20 15:01:50', '2024-11-20 15:02:00', 26);
+(62, 2, 1, '2024-11-20 15:01:50', '2024-11-20 15:02:00', 26),
+(63, 3, 11, '2024-12-04 12:52:29', '2024-12-04 12:52:32', 8);
 
 -- --------------------------------------------------------
 
@@ -374,7 +375,7 @@ CREATE TABLE `user` (
 
 INSERT INTO `user` (`ID`, `login`, `password`, `email`, `Activated`, `Admin`, `Status`, `LastOnline`) VALUES
 (1, 'test', '$2b$10$PXB.TaZvAfm8Izx/3qMFxe8T9dAV63EEGxRVQuKoMBAjy.teqSzY6', 'test@test.pl', 1, 0, 'active', '2024-11-03 23:42:09'),
-(2, 'admin', '$2b$10$IMMv4eFJTGB1.vCbsUGuou7inKXRek4jVPFtaPZITi.uoXV0oGD/6', 'admin@admin', 1, 0, 'active', '2024-11-19 01:08:53');
+(2, 'admin', '$2b$10$IMMv4eFJTGB1.vCbsUGuou7inKXRek4jVPFtaPZITi.uoXV0oGD/6', 'admin@admin', 1, 1, 'active', '2024-11-19 01:08:53');
 
 --
 -- Indeksy dla zrzutów tabel
@@ -567,7 +568,7 @@ ALTER TABLE `series`
 -- AUTO_INCREMENT for table `session`
 --
 ALTER TABLE `session`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=63;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=64;
 
 --
 -- AUTO_INCREMENT for table `statistics`
@@ -579,7 +580,7 @@ ALTER TABLE `statistics`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Constraints for dumped tables
