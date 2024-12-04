@@ -1,4 +1,4 @@
-.progileInfo{
+.profileInfo{
     background-color: #6AD4DD;
     position: relative;
     margin: 10px;
@@ -6,7 +6,7 @@
     display: flex;
   }
   
-  .progileInfo p{
+  .profileInfo p{
     display: flex;
     flex-direction: column;
     padding: 0 10px;
