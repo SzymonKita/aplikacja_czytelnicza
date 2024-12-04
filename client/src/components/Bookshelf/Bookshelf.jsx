@@ -8,7 +8,9 @@ const Bookshelf = () => {
     //TODO: Add getting data form database for the books and their information for progress and favurite state
     const books = [
         { id: 1, title: 'Book1', author: 'Author1', publisher: 'Publisher1', series: 'Series1', releaseDate: '11.11.1111', categories: 'Category1', description: 'Description1', pages: 200, pagesRead: 57, favourite: true, abandoned: false },
+        { id: 1, title: 'Book1', author: 'Author1', publisher: 'Publisher1', series: 'Series1', releaseDate: '11.11.1111', categories: 'Category1', description: 'Description1', pages: 200, pagesRead: 57, favourite: true, abandoned: false },
         { id: 2, title: 'Book2', author: 'Author2', publisher: 'Publisher2', series: 'Series2', releaseDate: '22.22.2222', categories: 'Category2', description: 'Description2', pages: 100, pagesRead: 8, favourite: false, abandoned: false },
+        { id: 3, title: 'Opuszczona', author: 'Author3', publisher: 'Publisher3', series: 'Series3', releaseDate: '33.33.3333', categories: 'Category3', description: 'Description3', pages: 100, pagesRead: 0, favourite: false, abandoned: true },
         { id: 3, title: 'Opuszczona', author: 'Author3', publisher: 'Publisher3', series: 'Series3', releaseDate: '33.33.3333', categories: 'Category3', description: 'Description3', pages: 100, pagesRead: 0, favourite: false, abandoned: true },
     ];
 
