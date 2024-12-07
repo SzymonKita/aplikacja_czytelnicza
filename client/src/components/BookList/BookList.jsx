@@ -22,7 +22,7 @@ const BookList = () => {
 
     return (
         <>
-            <Navigation title="Strona główna" />
+            <Navigation title="Lista książek" />
             <div className='container'>
                 <div className='content'>
                     <div className='bookList'>
@@ -41,8 +41,8 @@ const BookList = () => {
                     </div>
                 </div>
                 <div className='friendsList'>
-                    <FriendCard name='Friend 1' active={true} />
-                    <FriendCard name='Friend 2' active={false} />
+                    <FriendCard name='Kolega123' active={true} />
+                    <FriendCard name='Ktoś987' active={false} />
                 </div>
             </div>
         </>

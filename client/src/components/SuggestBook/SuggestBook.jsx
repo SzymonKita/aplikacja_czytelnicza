@@ -92,8 +92,8 @@ const SuggestBook = () => {
                     </form>
                 </div>
                 <div className='friendsList'>
-                    <FriendCard name='Friend 1' active={true} />
-                    <FriendCard name='Friend 2' active={false} />
+                    <FriendCard name='Kolega123' active={true} />
+                    <FriendCard name='Ktoś987' active={false} />
                 </div>
             </div>
         </>

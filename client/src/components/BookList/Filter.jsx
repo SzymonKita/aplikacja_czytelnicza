@@ -21,12 +21,12 @@ const Filter = () => {
             </div>
             <h3>Autor</h3>
             <div className='categories'>
-                <p><input type='checkbox' id='1' value='Autor' /><label for='1'>Autor1</label></p>
-                <p><input type='checkbox' id='2' value='Autor' /><label for='2'>Autor2</label></p>
-                <p><input type='checkbox' id='3' value='Autor' /><label for='3'>Autor3</label></p>
-                <p><input type='checkbox' id='4' value='Autor' /><label for='4'>Autor4</label></p>
-                <p><input type='checkbox' id='5' value='Autor' /><label for='5'>Autor5</label></p>
-                <p><input type='checkbox' id='6' value='Autor' /><label for='6'>Autor6</label></p>
+                <p><input type='checkbox' id='1' value='Autor' /><label for='1'>George Orwell</label></p>
+                <p><input type='checkbox' id='2' value='Autor' /><label for='2'>J.K. Rowling</label></p>
+                <p><input type='checkbox' id='3' value='Autor' /><label for='3'>Isaac Asimov</label></p>
+                <p><input type='checkbox' id='4' value='Autor' /><label for='4'>Jane Austen</label></p>
+                <p><input type='checkbox' id='5' value='Autor' /><label for='5'>George Orwell</label></p>
+                <p><input type='checkbox' id='6' value='Autor' /><label for='6'>Stephen King</label></p>
             </div>
             <Link to='/suggestBook'><button type='button'>Zaproponuj nową książkę</button></Link>
         </div>

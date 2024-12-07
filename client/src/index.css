@@ -93,6 +93,7 @@ h1 {
 .friendInfo{
   display: flex;
   flex-direction: column;
+  text-align: start;
 }
 
 .friendInfo p{

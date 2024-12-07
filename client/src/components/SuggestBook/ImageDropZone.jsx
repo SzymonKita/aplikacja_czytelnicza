@@ -37,7 +37,7 @@ function ImageDropZone({ onUploadSuccess }) {
             {imageSrc ? (
                 <img src={imageSrc} alt="Dropped" style={{ maxWidth: '100%', maxHeight: '100%' }} />
             ) : (
-                <p>Drag & Drop an image here</p>
+                <p>Przeciągnij i upuść obrazek tutaj</p>
             )}
         </div>
     );
