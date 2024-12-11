@@ -335,23 +335,39 @@ app.post('/upload-cover', upload.single('cover'), (req, res) => {
 app.post('/bookshelf', (req, res) => {
     const { userID, bookID, customPages, finished, favourite, abandoned } = req.body;
 
-    const query = `
-        INSERT INTO Bookshelf (UserID, BookID, Finished, Favourite, Abandoned, CustomPages)
-        VALUES (?, ?, ?, ?, ?, ?)
+    const checkQuery = `
+        SELECT * FROM Bookshelf WHERE UserID = ? AND BookID = ?
     `;
-    
-    db.query(
-        query, 
-        [userID, bookID, finished || 0, favourite || 0, abandoned || 0, customPages || null], 
-        (err, result) => {
-            if (err) {
-                console.error('Error adding book to bookshelf:', err);
-                return res.status(500).json({ error: 'Server error' });
-            }
-            res.status(201).json({ message: 'Book added to bookshelf', bookshelfID: result.insertId });
+
+    db.query(checkQuery, [userID, bookID], (err, results) => {
+        if (err) {
+            console.error('Error checking bookshelf:', err);
+            return res.status(500).json({ error: 'Server error' });
         }
-    );
+
+        if (results.length > 0) {
+            return res.status(409).json({ error: 'Book already exists in your bookshelf' });
+        }
+
+        const insertQuery = `
+            INSERT INTO Bookshelf (UserID, BookID, Finished, Favourite, Abandoned, CustomPages)
+            VALUES (?, ?, ?, ?, ?, ?)
+        `;
+        
+        db.query(
+            insertQuery, 
+            [userID, bookID, finished || 0, favourite || 0, abandoned || 0, customPages || null], 
+            (err, result) => {
+                if (err) {
+                    console.error('Error adding book to bookshelf:', err);
+                    return res.status(500).json({ error: 'Server error' });
+                }
+                res.status(201).json({ message: 'Book added to bookshelf', bookshelfID: result.insertId });
+            }
+        );
+    });
 });
+
 
 app.get('/bookshelf/:userID', (req, res) => {
     const userID = req.params.userID;
