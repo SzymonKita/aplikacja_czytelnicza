@@ -88,7 +88,8 @@ const Bookshelf = () => {
                                 pages: book.Pages,
                                 pagesRead: book.PagesRead,
                                 favourite: book.Favourite,
-                                abandoned: book.Abandoned
+                                abandoned: book.Abandoned,
+                                finished: book.Finished
                             }}
                             updateBookStatus={updateBookStatus}
                         />

@@ -64,6 +64,12 @@ const Session = () => {
                 timeEnd: timeEnd,
             });
 
+            const totalPagesRead = sessionInfo.pagesRead + num;
+            if (totalPagesRead === sessionInfo.pages) {
+                await axios.patch(`http://localhost:5000/api/bookshelf/${sessionInfo.bookshelfID}`, {
+                    finished: 1,
+                });
+            }
             navigate('/bookshelf');
         } catch (error) {
             console.error('Błąd podczas zapisywania sesji:', error);

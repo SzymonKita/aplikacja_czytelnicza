@@ -10,7 +10,7 @@ const BookshelfCard = ({ book, updateBookStatus }) => {
         ? `http://localhost:5000/covers/${book.cover}`
         : `http://localhost:5000/covers/default.png`;
 
-    const progress = Math.round((book.pagesRead / book.pages) * 100);
+    const progress = Math.floor((book.pagesRead / book.pages) * 100);
     const navigate = useNavigate();
 
     const toggleFavourite = async () => {
@@ -102,7 +102,7 @@ const BookshelfCard = ({ book, updateBookStatus }) => {
                 </div>
             </div>
             <div className="bookshelfButtons">
-                <button type="button" onClick={startSession}>Rozpocznij sesję</button>
+                {book.finished !== 1 && (<button type="button" onClick={startSession}>Rozpocznij sesję</button>)}
                 <div>
                 <button type="button" className="bookshelfFunctionButton" onClick={toggleFavourite}>
                     {fav ? '❤︎' : '♡'}
