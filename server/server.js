@@ -5,6 +5,7 @@ const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const path = require('path');
 const multer = require('multer');
+const { formatTimestamp } = require('./utils');
 const app = express();
 const PORT = 5000;
 
@@ -26,10 +27,6 @@ db.connect((err) => {
         console.log('Połączono z bazą danych MySQL.');
     }
 });
-
-const formatTimestamp = (timestamp) => {
-    return new Date(timestamp).toISOString().slice(0, 19).replace('T', ' ');
-};
 
 app.post('/register', async (req, res) => {
     const { login, password, email } = req.body;
@@ -511,11 +508,6 @@ app.get('/api/current-session/:userID', (req, res) => {
 app.post('/api/sessions', (req, res) => {
     const { bookshelfID, pagesRead, timeStart, timeEnd } = req.body;
 
-    const formatTimestamp = (timestamp) => {
-        return new Date(timestamp).toISOString().slice(0, 19).replace('T', ' ');
-    };
-
-    const timeStartFormatted = formatTimestamp(timeStart);
     const timeEndFormatted = formatTimestamp(timeEnd);
 
     const insertQuery = `
