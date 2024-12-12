@@ -1,18 +1,11 @@
 const mysql = require('mysql2');
 
-const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'BookApp'
+const db = mysql.createPool({
+    host: "localhost",
+    user: "root",
+    password: "",
+    database: "test_db",
+    port: 3306
 });
 
-connection.connect((err) => {
-    if (err) {
-        console.error('Błąd połączenia: ' + err.stack);
-        return;
-    }
-    console.log('Połączono jako ID ' + connection.threadId);
-});
-
-module.exports = connection;
+module.exports = db.promise();

@@ -196,8 +196,7 @@ app.get('/books/:id', (req, res) => {
             b.Pages, 
             b.Confirmed, 
             b.ReleaseDate,
-            b.Description,
-            c.Name as Categories
+            b.Description
         FROM 
             Book b
         JOIN Author a ON b.AuthorID = a.ID
@@ -232,6 +231,7 @@ app.get('/books/:id', (req, res) => {
         }
 
         const book = result[0];
+        console.log(result);
         res.status(200).json(book);
     });
 });
@@ -246,6 +246,7 @@ const queryDatabase = (query, params) => {
     });
 };
 
+//Nie działa poprawnie dodawania i wyszukiwanie wielu kategori
 app.post('/suggest-book', async (req, res) => {
     try {
         const { title, author, publisher, categories, series, releaseDate, description, pages, confirmed, cover } = req.body;
@@ -782,3 +783,5 @@ app.put('/books/:bookId/confirm', (req, res) => {
 app.listen(PORT, () => {
     console.log(`Serwer działa na porcie ${PORT}`);
 });
+
+module.exports = app;
