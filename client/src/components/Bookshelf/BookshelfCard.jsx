@@ -18,7 +18,7 @@ const BookshelfCard = ({ book, updateBookStatus }) => {
         setFav(!fav);
     
         try {
-            await axios.put(`http://localhost:5000/api/update-favourite`, {
+            await axios.put(`http://localhost:5000/books/update-favourite`, {
                 bookshelfID: book.bookshelfID,
                 favourite: newFavouriteStatus,
             });
@@ -34,7 +34,7 @@ const BookshelfCard = ({ book, updateBookStatus }) => {
         setAbd(!abd);
 
         try {
-            await axios.put(`http://localhost:5000/api/update-abandoned`, {
+            await axios.put(`http://localhost:5000/books/update-abandoned`, {
                 bookshelfID: book.bookshelfID,
                 abandoned: newAbandonedStatus,
             });
@@ -47,11 +47,11 @@ const BookshelfCard = ({ book, updateBookStatus }) => {
 
     const startSession = async () => {
         try {
-            const response = await axios.get(`http://localhost:5000/api/check-session/${book.bookshelfID}`);
+            const response = await axios.get(`http://localhost:5000/session/check/${book.bookshelfID}`);
             if (response.data.active) {
                 navigate('/session');
             } else {
-                await axios.post(`http://localhost:5000/api/start-session`, {
+                await axios.post(`http://localhost:5000/session/start`, {
                     bookshelfID: book.bookshelfID,
                     bookID: book.id,
                     timeStart: new Date().toISOString(),
@@ -66,15 +66,15 @@ const BookshelfCard = ({ book, updateBookStatus }) => {
 
     const handleContinue = async () => {
         try {
-            const response = await axios.get(`http://localhost:5000/api/current-session`);
+            const response = await axios.get(`http://localhost:5000/session/current`);
             const sessionID = response.data.sessionID;
 
-            await axios.put(`http://localhost:5000/api/end-session/${sessionID}`, {
+            await axios.put(`http://localhost:5000/session/end/${sessionID}`, {
                 timeEnd: new Date().toISOString(),
                 pagesRead: book.pagesRead,
             });
 
-            await axios.post(`http://localhost:5000/api/start-session`, {
+            await axios.post(`http://localhost:5000/session/start`, {
                 bookshelfID: book.bookshelfID,
                 timeStart: new Date().toISOString(),
             });

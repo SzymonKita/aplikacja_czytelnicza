@@ -1,12 +1,18 @@
 const mysql = require('mysql2');
 
-const db = mysql.createPool({
-    host: "localhost",
-    user: "root",
-    password: "",
-    database: "test_db",
-    port: 3306,
-    timezone: '+01:00'
+const db = mysql.createConnection({
+    host: 'localhost',
+    user: 'root',
+    password: '',
+    database: 'BookApp'
 });
 
-module.exports = db.promise();
+db.connect((err) => {
+    if (err) {
+        console.error('Nie udało się połączyć z bazą danych:', err);
+    } else {
+        console.log('Połączono z bazą danych MySQL.');
+    }
+});
+
+module.exports = db;

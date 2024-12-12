@@ -53,7 +53,7 @@ const SuggestBook = () => {
         };
 
         try {
-            const response = await axios.post('http://localhost:5000/suggest-book', bookData);
+            const response = await axios.post('http://localhost:5000/books/suggest', bookData);
             console.log('Książka dodana:', response.data);
             alert("Książka została pomyślnie dodana!");
         } catch (error) {

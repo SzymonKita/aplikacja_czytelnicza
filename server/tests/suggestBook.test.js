@@ -1,22 +1,22 @@
 const request = require('supertest');
 const app = require('../server'); // Import aplikacji Express
-const db = require('../db'); // Import konfiguracji bazy danych
+const dbtest = require('../dbtest'); // Import konfiguracji bazy danych
 const { formatTimestamp } = require('../utils');
 
 // Resetowanie bazy danych przed testami
 beforeAll(async () => {
-    await db.query('SET FOREIGN_KEY_CHECKS = 0');
-    await db.query('TRUNCATE TABLE BookCategory');
-    await db.query('TRUNCATE TABLE Book');
-    await db.query('TRUNCATE TABLE Category');
-    await db.query('TRUNCATE TABLE Series');
-    await db.query('TRUNCATE TABLE Publisher');
-    await db.query('TRUNCATE TABLE Author');
-    await db.query('SET FOREIGN_KEY_CHECKS = 1');
+    await dbtest.query('SET FOREIGN_KEY_CHECKS = 0');
+    await dbtest.query('TRUNCATE TABLE BookCategory');
+    await dbtest.query('TRUNCATE TABLE Book');
+    await dbtest.query('TRUNCATE TABLE Category');
+    await dbtest.query('TRUNCATE TABLE Series');
+    await dbtest.query('TRUNCATE TABLE Publisher');
+    await dbtest.query('TRUNCATE TABLE Author');
+    await dbtest.query('SET FOREIGN_KEY_CHECKS = 1');
 });
 
 afterAll(async () => {
-    await db.end(); // Zamknięcie połączenia z bazą danych
+    await dbtest.end(); // Zamknięcie połączenia z bazą danych
 });
 
 describe('POST /suggest-book and GET /books/:id', () => {
@@ -37,7 +37,7 @@ describe('POST /suggest-book and GET /books/:id', () => {
 
         // Dodawanie książki
         const addResponse = await request(app)
-            .post('/suggest-book')
+            .post('/books/suggest')
             .send(payload)
             .expect('Content-Type', /json/)
             .expect(201);

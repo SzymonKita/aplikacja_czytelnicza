@@ -16,7 +16,7 @@ function ImageDropZone({ onUploadSuccess }) {
             const formData = new FormData();
             formData.append('cover', file);
 
-            axios.post('http://localhost:5000/upload-cover', formData)
+            axios.post('http://localhost:5000/books/upload-cover', formData)
                 .then(response => {
                     if (response.data.fileName) {
                         onUploadSuccess(response.data.fileName); // Callback to pass the file name
