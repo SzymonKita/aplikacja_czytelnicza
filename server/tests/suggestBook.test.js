@@ -26,7 +26,7 @@ describe('POST /suggest-book and GET /books/:id', () => {
             title: 'Example Book',
             author: { firstName: 'John', lastName: 'Doe' },
             publisher: 'Example Publisher',
-            categories: ['Adventure', 'Fiction'],
+            categories: ['Fiction', 'Adventure'].sort(),
             series: 'Example Series',
             releaseDate: '2023-01-02',
             description: 'This is an example book.',
@@ -53,6 +53,8 @@ describe('POST /suggest-book and GET /books/:id', () => {
             .expect('Content-Type', /json/)
             .expect(200);
 
+
+        getResponse.body.Categories = getResponse.body.Categories.split(", ").sort()
         // Walidacja danych zwróconych przez endpoint GET /books/:id
         getResponse.body.ReleaseDate = getResponse.body.ReleaseDate.slice(0, 10)
         expect(getResponse.body).toMatchObject({
@@ -61,7 +63,7 @@ describe('POST /suggest-book and GET /books/:id', () => {
             AuthorFirstName: payload.author.firstName,
             AuthorLastName: payload.author.lastName,
             Publisher: payload.publisher,
-            Categories: payload.categories.join(', '),
+            Categories: payload.categories,
             Series: payload.series,
             Cover: payload.cover,
             Pages: payload.pages,

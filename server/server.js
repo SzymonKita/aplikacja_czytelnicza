@@ -201,7 +201,7 @@ app.get('/books/:id', (req, res) => {
             Book b
         JOIN Author a ON b.AuthorID = a.ID
         JOIN Publisher p ON b.PublisherID = p.ID
-        LEFT JOIN BookCategory bc ON b.ID = bc.BookID
+        LEFT JOIN BookCategory bc ON bc.BookID = b.ID 
         LEFT JOIN Category c ON bc.CategoryID = c.ID
         LEFT JOIN Series s ON b.SeriesID = s.ID
         WHERE 
