@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 
-function ImageDropZone() {
+function ImageDropZone({ onUploadSuccess }) {
     const [imageSrc, setImageSrc] = useState(null);
 
     const handleDrop = (event) => {
@@ -10,6 +11,20 @@ function ImageDropZone() {
             const reader = new FileReader();
             reader.onload = (e) => setImageSrc(e.target.result);
             reader.readAsDataURL(file);
+
+            // Upload the file to the server
+            const formData = new FormData();
+            formData.append('cover', file);
+
+            axios.post('http://localhost:5000/upload-cover', formData)
+                .then(response => {
+                    if (response.data.fileName) {
+                        onUploadSuccess(response.data.fileName); // Callback to pass the file name
+                    }
+                })
+                .catch(error => {
+                    console.error('Error uploading cover:', error);
+                });
         }
     };
 
@@ -18,15 +33,11 @@ function ImageDropZone() {
     };
 
     return (
-        <div className='dropZone'
-            onDrop={handleDrop}
-            onDragOver={handleDragOver}
-            
-        >
+        <div className='dropZone' onDrop={handleDrop} onDragOver={handleDragOver}>
             {imageSrc ? (
                 <img src={imageSrc} alt="Dropped" style={{ maxWidth: '100%', maxHeight: '100%' }} />
             ) : (
-                <p>Drag & Drop an image here</p>
+                <p>Przeciągnij i upuść obrazek tutaj</p>
             )}
         </div>
     );

@@ -1,0 +1,26 @@
+.acceptBookCard{
+    background-color: #6AD4DD;
+    display: flex;
+    margin: 10px 0;
+    text-align: justify;
+    gap: 10px;
+}
+
+.acceptBookCardDescription{
+    max-width: 50%;
+}
+
+.acceptBookCardImage{
+    width: 200px;
+    height: auto;
+}
+
+.acceptBookDetails{
+    display: flex;
+    justify-content: space-between;
+}
+
+.acceptBookCover{
+    width: 300px;
+    height: auto;
+}

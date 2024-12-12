@@ -1,24 +1,33 @@
-import image from '../blank-profile.png'
+import React, { useContext } from 'react';
+import { AuthContext } from '../../AuthContext';
+import image from './blank-profile.png';
+import { useNavigate } from 'react-router-dom';
 
 const ProfileInfo = () => {
+    const { logout } = useContext(AuthContext);
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        logout();
+        navigate('/');
+    };
+
     return (
-        <div className='progileInfo'>
+        <div className='profileInfo'>
             <p className='avatar'>
-                <img className='profilPicture' src={image} />
+                <img className='profilPicture' src={image}/>
                 ✎ Zmień awatar
             </p>
             <p className='stats'>
-                <h2>Nazwa użytkownika</h2>
+                <h2>EpicReader</h2>
                 <h3>Statystyki</h3>
-                Statystyka 1 : 10000111<br />
-                Statystyka 2 : 5000<br />
-                Statystyka 3 : 790<br />
-                Statystyka 4 : 25<br />
-                Statystyka 5 : 3<br />
+                Ilość przeczytanych stron : 2345<br />
+                Ilość przeczytanych książek : 4<br />
+                Ilość minut spędzonych na czytaniu : 1000<br />
             </p>
-            <button type='button' className='logout'>Wyloguj</button>
+            <button type='button' className='logout' onClick={handleLogout}>Wyloguj</button>
         </div>
-    )
-}
+    );
+};
 
-export default ProfileInfo
+export default ProfileInfo;
