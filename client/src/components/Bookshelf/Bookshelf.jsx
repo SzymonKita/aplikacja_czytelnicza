@@ -4,6 +4,7 @@ import Navigation from '../Navigation/Navigation.jsx';
 import FriendCard from '../FriendCard.jsx';
 import BookshelfCard from './BookshelfCard.jsx';
 import { AuthContext } from '../../AuthContext';
+import { filterBooks } from './bookshelfUtils.js';
 import './Bookshelf.css';
 
 const Bookshelf = () => {
@@ -41,19 +42,6 @@ const Bookshelf = () => {
         );
     };
 
-    const filteredBooks = books.filter((book) => {
-        if (filter === 'all') {
-            return !book.Abandoned;
-        }
-        if (filter === 'favourite') {
-            return book.Favourite;
-        }
-        if (filter === 'abandoned') {
-            return book.Abandoned;
-        }
-        return true;
-    });
-
     if (error) {
         return (
             <div>
@@ -76,7 +64,7 @@ const Bookshelf = () => {
                             <option value="abandoned">Opuszczone</option>
                         </select>
                     </div>
-                    {filteredBooks.map((book) => (
+                    {filterBooks(books, filter).map((book) => (
                         <BookshelfCard
                             key={book.ID}
                             book={{
