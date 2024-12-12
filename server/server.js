@@ -195,7 +195,7 @@ app.get('/books/:id', (req, res) => {
             b.Cover, 
             b.Pages, 
             b.Confirmed, 
-            b.ReleaseDate,
+            CONVERT_TZ(b.ReleaseDate, '+00:00', '+01:00') AS ReleaseDate,
             b.Description
         FROM 
             Book b

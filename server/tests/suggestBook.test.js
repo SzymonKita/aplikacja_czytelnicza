@@ -54,8 +54,7 @@ describe('POST /suggest-book and GET /books/:id', () => {
             .expect(200);
 
         // Walidacja danych zwróconych przez endpoint GET /books/:id
-        getResponse.body.ReleaseDate = formatTimestamp(getResponse.body.ReleaseDate)
-        payload.releaseDate = formatTimestamp(payload.releaseDate)
+        getResponse.body.ReleaseDate = getResponse.body.ReleaseDate.slice(0, 10)
         expect(getResponse.body).toMatchObject({
             ID: bookId,
             Title: payload.title,
