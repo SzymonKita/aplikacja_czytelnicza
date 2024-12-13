@@ -16,7 +16,7 @@ const Session = () => {
     useEffect(() => {
         const fetchSessionData = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/api/current-session/${userID}`);
+                const response = await axios.get(`http://localhost:5000/session/current/${userID}`);
                 console.log('Odpowiedź z backendu:', response.data);
                 setSessionInfo(response.data);
                 setTimeStart(Date.now())
@@ -57,13 +57,19 @@ const Session = () => {
         const timeEnd = Date.now();
 
         try {
-            await axios.post('http://localhost:5000/api/sessions', {
+            await axios.post('http://localhost:5000/session', {
                 bookshelfID: sessionInfo.bookshelfID,
                 pagesRead: num,
                 timeStart: timeStart,
                 timeEnd: timeEnd,
             });
 
+            const totalPagesRead = sessionInfo.pagesRead + num;
+            if (totalPagesRead === sessionInfo.pages) {
+                await axios.patch(`http://localhost:5000/bookshelf/${sessionInfo.bookshelfID}`, {
+                    finished: 1,
+                });
+            }
             navigate('/bookshelf');
         } catch (error) {
             console.error('Błąd podczas zapisywania sesji:', error);

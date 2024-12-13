@@ -36,27 +36,33 @@ const BookInfo = () => {
 
     const addToBookshelf = async () => {
         if (!isLoggedIn) {
-          alert("You must be logged in to add books to your bookshelf.");
-          return;
+            alert('You must be logged in to add books to your bookshelf.');
+            return;
         }
     
         try {
-          const response = await axios.post('http://localhost:5000/bookshelf', {
-            userID,
-            bookID: book.ID,
-            finished: 0,
-            favourite: 0,
-            abandoned: 0,
-            customPages: null
-          });
-          if (response.status === 201) {
-            alert('Book added to your bookshelf!');
-          }
+            const response = await axios.post('http://localhost:5000/bookshelf', {
+                userID,
+                bookID: book.ID,
+                finished: 0,
+                favourite: 0,
+                abandoned: 0,
+                customPages: null,
+            });
+    
+            if (response.status === 201) {
+                alert('Książka została dodana do biblioteczki!');
+            }
         } catch (error) {
-          console.error('Error adding book to bookshelf:', error);
-          alert('Failed to add book.');
+            if (error.response && error.response.status === 409) {
+                alert('Ta książka znajduję się już w twojej biblioteczce.');
+            } else {
+                console.error('Error adding book to bookshelf:', error);
+                alert('Failed to add book.');
+            }
         }
-      };
+    };
+    
 
     if (error) {
         return <Navigation title="Błąd" />;

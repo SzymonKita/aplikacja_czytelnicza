@@ -16,7 +16,7 @@ const Profile = () => {
     const fetchBookshelf = async () => {
       if (userID) {
         try {
-          const response = await axios.get(`http://localhost:5000/bookshelf/${userID}`);
+          const response = await axios.get(`http://localhost:5000/bookshelf/Favourite/${userID}`);
           setBookshelf(response.data); 
         } catch (error) {
           console.error('Error fetching bookshelf:', error);
@@ -48,7 +48,7 @@ const Profile = () => {
                   />
                 ))
               ) : (
-                <p>Brak książek w biblioteczce.</p>
+                <p>Brak ulubionych książek w biblioteczce.</p>
               )}
             </div>
           </div>
