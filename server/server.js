@@ -5,6 +5,7 @@ const authRoutes = require('./routes/auth');
 const bookRoutes = require('./routes/books');
 const bookshelfRoutes = require('./routes/bookshelf');
 const sessionRoutes = require('./routes/session');
+const forumRoutes = require('./routes/forum');
 const app = express();
 const PORT = 5000;
 
@@ -16,6 +17,7 @@ app.use('/auth', authRoutes);
 app.use('/books', bookRoutes);
 app.use('/bookshelf', bookshelfRoutes);
 app.use('/session', sessionRoutes);
+app.use('/forum', forumRoutes);
 
 app.listen(PORT, () => {
     console.log(`Serwer działa na porcie ${PORT}`);
