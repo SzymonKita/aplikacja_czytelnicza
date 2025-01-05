@@ -23,10 +23,21 @@ router.post('/register', async (req, res) => {
             (err, result) => {
                 if (err) {
                     console.error('Błąd podczas rejestracji:', err);
-                    res.status(500).json({ error: 'Błąd podczas rejestracji' });
-                } else {
-                    res.status(201).json({ message: 'Rejestracja zakończona sukcesem' });
+                    return res.status(500).json({ error: 'Błąd podczas rejestracji' });
                 }
+                
+                const userId = result.insertId;
+                db.query('INSERT INTO statistics (UserID, ReadingSpeed, TotalTime) VALUES (?, 0, 0)',
+                    [userId],
+                    (err) => {
+                        if (err) {
+                            console.error('Błąd podczas tworzenia rekordu w tabeli statistics:', err);
+                            return res.status(500).json({ error: 'Błąd podczas tworzenia rekordu w tabeli statistics' });
+                        }
+
+                        res.status(201).json({ message: 'Rejestracja zakończona sukcesem' });
+                    }
+                );
             }
         );
     });

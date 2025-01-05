@@ -9,38 +9,61 @@ import axios from 'axios';
 import "./Profile.css";
 
 const Profile = () => {
-  const [bookshelf, setBookshelf] = useState([]); 
-  const { userID } = useContext(AuthContext); 
+  const [bookshelf, setBookshelf] = useState([]);
+  const [userData, setUserData] = useState(null);
+  const { userID } = useContext(AuthContext);
 
   useEffect(() => {
+    const fetchUserData = async () => {
+      if (userID) {
+        try {
+          const response = await axios.get(`http://localhost:5000/profile/${userID}`);
+          setUserData(response.data);
+        } catch (error) {
+          console.error('Error fetching user data:', error);
+        }
+      }
+    };
+
     const fetchBookshelf = async () => {
       if (userID) {
         try {
           const response = await axios.get(`http://localhost:5000/bookshelf/Favourite/${userID}`);
-          setBookshelf(response.data); 
+          setBookshelf(response.data);
         } catch (error) {
           console.error('Error fetching bookshelf:', error);
         }
       }
     };
 
+    fetchUserData();
     fetchBookshelf();
-  }, [userID]); 
+  }, [userID]);
 
   return (
     <>
       <Navigation title="Profil" />
       <div className='container'>
         <div className='content'>
-          <ProfileInfo />
+          {userData ? (
+            <ProfileInfo 
+              username={userData[0].Name} 
+              stats={{
+                ReadingSpeed: userData[0].ReadingSpeed,
+                TotalTime: userData[0].TotalTime,
+              }} 
+            />
+          ) : (
+            <p>Ładowanie danych użytkownika...</p>
+          )}
           <div className='box'>
             <h3>Ulubione książki</h3>
             <div className='favouriteBooks'>
               {bookshelf.length > 0 ? (
                 bookshelf.map((book) => (
                   <Book
-                    key={book.ID}  
-                    id={book.ID}  
+                    key={book.ID}
+                    id={book.ID}
                     title={book.Title}
                     author={`${book.AuthorFirstName} ${book.AuthorLastName}`}
                     cover={book.Cover}

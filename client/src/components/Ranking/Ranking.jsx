@@ -1,19 +1,52 @@
-import Navigation from '../Navigation/Navigation.jsx'
-import FriendCard from '../FriendCard.jsx'
-import RankingCard from './RankingCard.jsx'
-import './Ranking.css'
+import React, { useEffect, useState } from 'react';
+import Navigation from '../Navigation/Navigation.jsx';
+import FriendCard from '../FriendCard.jsx';
+import RankingCard from './RankingCard.jsx';
+import './Ranking.css';
 
 const Ranking = () => {
-    const users = [
-        { id: 1, name: 'User1', text: '1' },
-        { id: 2, name: 'User2', text: '2' },
-        { id: 3, name: 'User3', text: '3' },
-        { id: 4, name: 'User4', text: '4' },
-        { id: 5, name: 'User5', text: '5' },
-        { id: 6, name: 'User6', text: '6' },
-        { id: 7, name: 'User7', text: '7' },
-        { id: 8, name: 'User8', text: '8' }
-    ]
+    const [readingSpeedRanking, setReadingSpeedRanking] = useState([]);
+    const [totalTimeRanking, setTotalTimeRanking] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchStatistics = async () => {
+            try {
+                const response = await fetch('http://localhost:5000/session/statistics');
+                const data = await response.json();
+
+                // Sort for separate rankings
+                const sortedByReadingSpeed = [...data].sort((a, b) => b.readingSpeed - a.readingSpeed);
+                const sortedByTotalTime = [...data].sort((a, b) => b.totalTime - a.totalTime);
+
+                setReadingSpeedRanking(
+                    sortedByReadingSpeed.map((item) => ({
+                        id: item.id,
+                        name: item.name,
+                        text: `${item.readingSpeed.toFixed(2)} pages/min`
+                    }))
+                );
+
+                setTotalTimeRanking(
+                    sortedByTotalTime.map((item) => ({
+                        id: item.id,
+                        name: item.name,
+                        text: `${item.totalTime} mins`
+                    }))
+                );
+            } catch (error) {
+                console.error('Błąd podczas pobierania danych:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchStatistics();
+    }, []);
+
+    if (loading) {
+        return <div>Ładowanie...</div>;
+    }
 
     return (
         <>
@@ -21,10 +54,8 @@ const Ranking = () => {
             <div className='container'>
                 <div className='content'>
                     <div className='ranking'>
-                        <RankingCard items={ users } title='Ranking 1' />
-                        <RankingCard items={ users } title='Ranking 2' />
-                        <RankingCard items={ users } title='Ranking 3' />
-                        <RankingCard items={ users } title='Ranking 4' />
+                        <RankingCard items={readingSpeedRanking} title='Ranking - Reading Speed' />
+                        <RankingCard items={totalTimeRanking} title='Ranking - Total Time' />
                     </div>
                 </div>
                 <div className='friendsList'>
@@ -33,7 +64,7 @@ const Ranking = () => {
                 </div>
             </div>
         </>
-    )
-}
+    );
+};
 
-export default Ranking
+export default Ranking;

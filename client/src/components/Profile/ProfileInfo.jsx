@@ -3,7 +3,7 @@ import { AuthContext } from '../../AuthContext';
 import image from './blank-profile.png';
 import { useNavigate } from 'react-router-dom';
 
-const ProfileInfo = () => {
+const ProfileInfo = ({ username, stats }) => {
     const { logout } = useContext(AuthContext);
     const navigate = useNavigate();
 
@@ -15,15 +15,15 @@ const ProfileInfo = () => {
     return (
         <div className='profileInfo'>
             <p className='avatar'>
-                <img className='profilPicture' src={image}/>
+                <img className='profilPicture' src={image} alt="Avatar" />
                 ✎ Zmień awatar
             </p>
             <p className='stats'>
-                <h2>EpicReader</h2>
+                <h2>{username}</h2>
                 <h3>Statystyki</h3>
-                Ilość przeczytanych stron : 2345<br />
-                Ilość przeczytanych książek : 4<br />
-                Ilość minut spędzonych na czytaniu : 1000<br />
+                Ilość przeczytanych stron: {stats.ReadingSpeed}<br />
+                Ilość przeczytanych książek: {stats.TotalTime}<br />
+                Ilość minut spędzonych na czytaniu: {stats.TotalTime}<br />
             </p>
             <button type='button' className='logout' onClick={handleLogout}>Wyloguj</button>
         </div>
