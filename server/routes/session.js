@@ -1,11 +1,11 @@
-const express = require('express');
-const db = require('../db');
+const express = require("express");
+const db = require("../db");
 const router = express.Router();
-const { formatTimestamp } = require('../utils');
+const { formatTimestamp } = require("../utils");
 
-router.get('/current/:userID', (req, res) => {
-    const userID = req.params.userID;
-    const query = `
+router.get("/current/:userID", (req, res) => {
+  const userID = req.params.userID;
+  const query = `
         SELECT 
             s.ID AS sessionID, 
             bs.ID AS bookshelfID, 
@@ -25,40 +25,40 @@ router.get('/current/:userID', (req, res) => {
             bs.UserID = ? AND s.TimeEnd IS NULL
     `;
 
-    db.query(query, [userID], (err, result) => {
-        if (err) {
-            console.error('Błąd podczas pobierania aktualnej sesji:', err);
-            return res.status(500).json({ error: 'Błąd podczas pobierania aktualnej sesji' });
-        }
+  db.query(query, [userID], (err, result) => {
+    if (err) {
+      console.error("Błąd podczas pobierania aktualnej sesji:", err);
+      return res
+        .status(500)
+        .json({ error: "Błąd podczas pobierania aktualnej sesji" });
+    }
 
-        if (result.length === 0) {
-            return res.status(404).json({ error: 'Brak aktywnej sesji' });
-        }
+    if (result.length === 0) {
+      return res.status(404).json({ error: "Brak aktywnej sesji" });
+    }
 
-        const session = result[0];
-        res.status(200).json({
-            sessionID: session.sessionID,
-            bookshelfID: session.bookshelfID,
-            id: session.bookID,
-            title: session.Title,
-            author: `${session.AuthorFirstName} ${session.AuthorLastName}`,
-            pages: session.Pages,
-            pagesRead: session.PagesRead,
-            cover: session.Cover,
-        });
+    const session = result[0];
+    res.status(200).json({
+      sessionID: session.sessionID,
+      bookshelfID: session.bookshelfID,
+      id: session.bookID,
+      title: session.Title,
+      author: `${session.AuthorFirstName} ${session.AuthorLastName}`,
+      pages: session.Pages,
+      pagesRead: session.PagesRead,
+      cover: session.Cover,
     });
+  });
 });
 
+router.post("/", (req, res) => {
+  const { bookshelfID, pagesRead, timeStart, timeEnd } = req.body;
 
+  const timeEndFormatted = formatTimestamp(timeEnd);
+  const sessionDurationMinutes =
+    (new Date(timeEnd) - new Date(timeStart)) / 60000;
 
-
-router.post('/', (req, res) => {
-    const { bookshelfID, pagesRead, timeStart, timeEnd } = req.body;
-
-    const timeEndFormatted = formatTimestamp(timeEnd);
-    const sessionDurationMinutes = (new Date(timeEnd) - new Date(timeStart)) / 60000;
-
-    const insertQuery = `
+  const insertQuery = `
         UPDATE Session
         SET PagesRead = ?, TimeEnd = ?
         WHERE ID = (
@@ -66,13 +66,13 @@ router.post('/', (req, res) => {
         );
     `;
 
-    const updateBookshelfQuery = `
+  const updateBookshelfQuery = `
         UPDATE Bookshelf
         SET CustomPages = CustomPages + ?
         WHERE ID = ?
     `;
 
-    const updateStatisticsQuery = `
+  const updateStatisticsQuery = `
         UPDATE statistics
         SET ReadingSpeed = 
             CASE WHEN TotalTime + ? > 0 THEN 
@@ -80,165 +80,173 @@ router.post('/', (req, res) => {
             ELSE 
                 ? / ?
             END,
-            TotalTime = TotalTime + ?
+            TotalTime = TotalTime + ?,
+            TotalPagesRead = TotalPagesRead + ?
         WHERE UserID = (
             SELECT UserID FROM Bookshelf WHERE ID = ?
         );
     `;
 
-    db.beginTransaction((err) => {
+  db.beginTransaction((err) => {
+    if (err) {
+      console.error("Błąd rozpoczęcia transakcji:", err);
+      return res.status(500).json({ error: "Błąd zakończenia sesji" });
+    }
+
+    db.query(insertQuery, [pagesRead, timeEndFormatted, bookshelfID], (err) => {
+      if (err) {
+        return db.rollback(() => {
+          console.error("Błąd aktualizacji sesji:", err);
+          res.status(500).json({ error: "Nie udało się zaktualizować sesji" });
+        });
+      }
+
+      db.query(updateBookshelfQuery, [pagesRead, bookshelfID], (err) => {
         if (err) {
-            console.error('Błąd rozpoczęcia transakcji:', err);
-            return res.status(500).json({ error: 'Błąd zakończenia sesji' });
+          return db.rollback(() => {
+            console.error("Błąd aktualizacji postępu:", err);
+            res
+              .status(500)
+              .json({ error: "Nie udało się zaktualizować postępu" });
+          });
         }
 
-        db.query(insertQuery, [pagesRead, timeEndFormatted, bookshelfID], (err) => {
+        const readingSpeed =
+          sessionDurationMinutes > 0 ? pagesRead / sessionDurationMinutes : 0;
+
+        db.query(
+          updateStatisticsQuery,
+          [
+            sessionDurationMinutes, // + czas sesji do TotalTime
+            pagesRead, // liczba stron z sesji
+            sessionDurationMinutes, // czas trwania sesji w minutach
+            sessionDurationMinutes, // czas sesji do TotalTime
+            pagesRead, // jeśli to pierwsza sesja: liczba stron z sesji
+            sessionDurationMinutes, // jeśli to pierwsza sesja: czas sesji w minutach
+            sessionDurationMinutes, // + czas sesji do TotalTime
+            pagesRead, // + liczba stron do TotalPagesRead
+            bookshelfID, // ID półki, aby znaleźć odpowiedni UserID
+          ],
+          (err) => {
             if (err) {
-                return db.rollback(() => {
-                    console.error('Błąd aktualizacji sesji:', err);
-                    res.status(500).json({ error: 'Nie udało się zaktualizować sesji' });
-                });
+              return db.rollback(() => {
+                console.error("Błąd aktualizacji statystyk:", err);
+                res
+                  .status(500)
+                  .json({ error: "Nie udało się zaktualizować statystyk" });
+              });
             }
 
-            db.query(updateBookshelfQuery, [pagesRead, bookshelfID], (err) => {
-                if (err) {
-                    return db.rollback(() => {
-                        console.error('Błąd aktualizacji postępu:', err);
-                        res.status(500).json({ error: 'Nie udało się zaktualizować postępu' });
-                    });
-                }
+            db.commit((err) => {
+              if (err) {
+                return db.rollback(() => {
+                  console.error("Błąd zatwierdzania transakcji:", err);
+                  res.status(500).json({ error: "Błąd zakończenia sesji" });
+                });
+              }
 
-                const readingSpeed = sessionDurationMinutes > 0 ? pagesRead / sessionDurationMinutes : 0;
-
-                db.query(
-                    updateStatisticsQuery,
-                    [
-                        sessionDurationMinutes, // + czas sesji do TotalTime
-                        pagesRead, // liczba stron z sesji
-                        sessionDurationMinutes, // czas trwania sesji w minutach
-                        sessionDurationMinutes, // czas sesji do TotalTime
-                        pagesRead, // jeśli to pierwsza sesja: liczba stron z sesji
-                        sessionDurationMinutes, // jeśli to pierwsza sesja: czas sesji w minutach
-                        sessionDurationMinutes, // + czas sesji do TotalTime
-                        bookshelfID, // ID półki, aby znaleźć odpowiedni UserID
-                    ],
-                    (err) => {
-                        if (err) {
-                            return db.rollback(() => {
-                                console.error('Błąd aktualizacji statystyk:', err);
-                                res.status(500).json({ error: 'Nie udało się zaktualizować statystyk' });
-                            });
-                        }
-
-                        db.commit((err) => {
-                            if (err) {
-                                return db.rollback(() => {
-                                    console.error('Błąd zatwierdzania transakcji:', err);
-                                    res.status(500).json({ error: 'Błąd zakończenia sesji' });
-                                });
-                            }
-
-                            res.status(200).json({ message: 'Sesja została zakończona pomyślnie, statystyki zaktualizowane' });
-                        });
-                    }
-                );
+              res.status(200).json({
+                message:
+                  "Sesja została zakończona pomyślnie, statystyki zaktualizowane",
+              });
             });
-        });
+          }
+        );
+      });
     });
+  });
 });
 
+router.post("/start", (req, res) => {
+  const { bookshelfID, bookID, timeStart } = req.body;
 
-
-
-
-router.post('/start', (req, res) => {
-    const { bookshelfID, bookID, timeStart } = req.body;
-
-    const query = `
+  const query = `
         INSERT INTO Session (BookshelfID, BookID, TimeStart)
         VALUES (?, ?, ?)
     `;
 
-    db.query(query, [bookshelfID, bookID, timeStart], (err, result) => {
-        if (err) {
-            console.error('Błąd rozpoczęcia sesji:', err);
-            return res.status(500).json({ error: 'Nie udało się rozpocząć sesji' });
-        }
+  db.query(query, [bookshelfID, bookID, timeStart], (err, result) => {
+    if (err) {
+      console.error("Błąd rozpoczęcia sesji:", err);
+      return res.status(500).json({ error: "Nie udało się rozpocząć sesji" });
+    }
 
-        res.status(201).json({ message: 'Sesja została rozpoczęta', sessionID: result.insertId });
+    res.status(201).json({
+      message: "Sesja została rozpoczęta",
+      sessionID: result.insertId,
     });
+  });
 });
 
+router.put("/end/:sessionID", (req, res) => {
+  const { sessionID } = req.params;
+  const { timeEnd, pagesRead } = req.body;
 
-router.put('/end/:sessionID', (req, res) => {
-    const { sessionID } = req.params;
-    const { timeEnd, pagesRead } = req.body;
-
-    const query = `
+  const query = `
         UPDATE Session 
         SET TimeEnd = ?, PagesRead = ?
         WHERE ID = ? AND TimeEnd IS NULL
     `;
 
-    db.query(query, [timeEnd, pagesRead, sessionID], (err, result) => {
-        if (err) {
-            console.error('Błąd zamykania sesji:', err);
-            return res.status(500).json({ error: 'Nie udało się zamknąć sesji' });
-        }
+  db.query(query, [timeEnd, pagesRead, sessionID], (err, result) => {
+    if (err) {
+      console.error("Błąd zamykania sesji:", err);
+      return res.status(500).json({ error: "Nie udało się zamknąć sesji" });
+    }
 
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ error: 'Nie znaleziono aktywnej sesji' });
-        }
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "Nie znaleziono aktywnej sesji" });
+    }
 
-        res.status(200).json({ message: 'Sesja została zamknięta' });
-    });
+    res.status(200).json({ message: "Sesja została zamknięta" });
+  });
 });
 
-router.get('/check/:bookshelfID', (req, res) => {
-    const { bookshelfID } = req.params;
+router.get("/check/:bookshelfID", (req, res) => {
+  const { bookshelfID } = req.params;
 
-    const query = `
+  const query = `
         SELECT ID 
         FROM Session
         WHERE BookshelfID = ? AND TimeEnd IS NULL
     `;
 
-    db.query(query, [bookshelfID], (err, result) => {
-        if (err) {
-            console.error('Błąd sprawdzania sesji:', err);
-            return res.status(500).json({ error: 'Błąd sprawdzania statusu sesji' });
-        }
+  db.query(query, [bookshelfID], (err, result) => {
+    if (err) {
+      console.error("Błąd sprawdzania sesji:", err);
+      return res.status(500).json({ error: "Błąd sprawdzania statusu sesji" });
+    }
 
-        if (result.length === 0) {
-            return res.status(200).json({ active: false });
-        }
+    if (result.length === 0) {
+      return res.status(200).json({ active: false });
+    }
 
-        res.status(200).json({ active: true, sessionID: result[0].ID });
-    });
+    res.status(200).json({ active: true, sessionID: result[0].ID });
+  });
 });
 
-router.get('/statistics', (req, res) => {
-    const query = `
+router.get("/statistics", (req, res) => {
+  const query = `
         SELECT 
             s.ID as id,
             s.UserID as userId,
             u.login as name,
             s.ReadingSpeed as readingSpeed,
-            s.TotalTime as totalTime
+            s.TotalTime as totalTime,
+            s.TotalPagesRead
         FROM Statistics s
         JOIN User u ON s.UserID = u.ID
-        ORDER BY s.ReadingSpeed DESC, s.TotalTime DESC
+        ORDER BY s.ReadingSpeed DESC, s.TotalTime DESC, s.TotalPagesRead DESC
     `;
 
-    db.query(query, (err, results) => {
-        if (err) {
-            console.error('Błąd podczas pobierania statystyk:', err);
-            return res.status(500).json({ error: 'Nie udało się pobrać statystyk' });
-        }
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error("Błąd podczas pobierania statystyk:", err);
+      return res.status(500).json({ error: "Nie udało się pobrać statystyk" });
+    }
 
-        res.status(200).json(results);
-    });
+    res.status(200).json(results);
+  });
 });
-
 
 module.exports = router;

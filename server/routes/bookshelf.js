@@ -1,46 +1,78 @@
-const express = require('express');
-const db = require('../db');
+const express = require("express");
+const db = require("../db");
 const router = express.Router();
 
-router.post('/', (req, res) => {
-    const { userID, bookID, customPages, finished, favourite, abandoned } = req.body;
+router.post("/", (req, res) => {
+  const { userID, bookID, finished, favourite, abandoned } = req.body;
 
-    const checkQuery = `
+  const checkQuery = `
         SELECT * FROM Bookshelf WHERE UserID = ? AND BookID = ?
     `;
 
-    db.query(checkQuery, [userID, bookID], (err, results) => {
-        if (err) {
-            console.error('Error checking bookshelf:', err);
-            return res.status(500).json({ error: 'Server error' });
-        }
+  db.query(checkQuery, [userID, bookID], (err, results) => {
+    if (err) {
+      console.error("Error checking bookshelf:", err);
+      return res.status(500).json({ error: "Server error" });
+    }
 
-        if (results.length > 0) {
-            return res.status(409).json({ error: 'Book already exists in your bookshelf' });
-        }
+    if (results.length > 0) {
+      return res
+        .status(409)
+        .json({ error: "Book already exists in your bookshelf" });
+    }
 
-        const insertQuery = `
-            INSERT INTO Bookshelf (UserID, BookID, Finished, Favourite, Abandoned, CustomPages)
-            VALUES (?, ?, ?, ?, ?, ?)
+    const getPagesQuery = `
+            SELECT Pages FROM Book WHERE ID = ?
         `;
-        
-        db.query(
-            insertQuery, 
-            [userID, bookID, finished || 0, favourite || 0, abandoned || 0, customPages || null], 
-            (err, result) => {
-                if (err) {
-                    console.error('Error adding book to bookshelf:', err);
-                    return res.status(500).json({ error: 'Server error' });
-                }
-                res.status(201).json({ message: 'Book added to bookshelf', bookshelfID: result.insertId });
-            }
-        );
-    });
-});
-router.get('/:userID', (req, res) => {
-    const userID = req.params.userID;
 
-    const query = `
+    db.query(getPagesQuery, [bookID], (err, bookResults) => {
+      if (err) {
+        console.error("Error fetching book pages:", err);
+        return res.status(500).json({ error: "Server error" });
+      }
+
+      if (bookResults.length === 0) {
+        return res.status(404).json({ error: "Book not found" });
+      }
+
+      const customPages = bookResults[0].Pages || null;
+
+      const insertQuery = `
+                INSERT INTO Bookshelf (UserID, BookID, Finished, Favourite, Abandoned, CustomPages)
+                VALUES (?, ?, ?, ?, ?, ?)
+            `;
+
+      db.query(
+        insertQuery,
+        [
+          userID,
+          bookID,
+          finished || 0,
+          favourite || 0,
+          abandoned || 0,
+          customPages,
+        ],
+        (err, result) => {
+          if (err) {
+            console.error("Error adding book to bookshelf:", err);
+            return res.status(500).json({ error: "Server error" });
+          }
+          res
+            .status(201)
+            .json({
+              message: "Book added to bookshelf",
+              bookshelfID: result.insertId,
+            });
+        }
+      );
+    });
+  });
+});
+
+router.get("/:userID", (req, res) => {
+  const userID = req.params.userID;
+
+  const query = `
         SELECT 
             b.ID, 
             b.Title, 
@@ -61,23 +93,25 @@ router.get('/:userID', (req, res) => {
             bs.UserID = ? 
     `;
 
-    db.query(query, [userID], (err, result) => {
-        if (err) {
-            console.error('Błąd podczas pobierania książek z biblioteczki:', err);
-            return res.status(500).json({ error: 'Błąd podczas pobierania książek z biblioteczki' });
-        }
+  db.query(query, [userID], (err, result) => {
+    if (err) {
+      console.error("Błąd podczas pobierania książek z biblioteczki:", err);
+      return res
+        .status(500)
+        .json({ error: "Błąd podczas pobierania książek z biblioteczki" });
+    }
 
-        if (result.length === 0) {
-            return res.status(404).json({ error: 'Brak książek w biblioteczce' });
-        }
+    if (result.length === 0) {
+      return res.status(404).json({ error: "Brak książek w biblioteczce" });
+    }
 
-        res.status(200).json(result);
-    });
+    res.status(200).json(result);
+  });
 });
-router.get('/Favourite/:userID', (req, res) => {
-    const userID = req.params.userID;
+router.get("/Favourite/:userID", (req, res) => {
+  const userID = req.params.userID;
 
-    const query = `
+  const query = `
         SELECT 
             b.ID, 
             b.Title, 
@@ -97,30 +131,34 @@ router.get('/Favourite/:userID', (req, res) => {
             bs.UserID = ? and bs.Favourite = 1
     `;
 
-    db.query(query, [userID], (err, result) => {
-        if (err) {
-            console.error('Błąd podczas pobierania książek z biblioteczki:', err);
-            return res.status(500).json({ error: 'Błąd podczas pobierania książek z biblioteczki' });
-        }
+  db.query(query, [userID], (err, result) => {
+    if (err) {
+      console.error("Błąd podczas pobierania książek z biblioteczki:", err);
+      return res
+        .status(500)
+        .json({ error: "Błąd podczas pobierania książek z biblioteczki" });
+    }
 
-        if (result.length === 0) {
-            return res.status(404).json({ error: 'Brak książek w biblioteczce' });
-        }
+    if (result.length === 0) {
+      return res.status(404).json({ error: "Brak książek w biblioteczce" });
+    }
 
-        res.status(200).json(result);
-    });
+    res.status(200).json(result);
+  });
 });
-router.patch('/:id', (req, res) => {
-    const { id } = req.params;
-    const { finished } = req.body;
+router.patch("/:id", (req, res) => {
+  const { id } = req.params;
+  const { finished } = req.body;
 
-    const query = 'UPDATE Bookshelf SET finished = ? WHERE ID = ?';
-    db.query(query, [finished, id], (error, results) => {
-        if (error) {
-            console.error('Błąd podczas aktualizacji:', error);
-            return res.status(500).json({ error: 'Nie udało się zaktualizować rekordu.' });
-        }
-        res.status(200).json({ message: 'Pole finished zostało zaktualizowane.' });
-    });
+  const query = "UPDATE Bookshelf SET finished = ? WHERE ID = ?";
+  db.query(query, [finished, id], (error, results) => {
+    if (error) {
+      console.error("Błąd podczas aktualizacji:", error);
+      return res
+        .status(500)
+        .json({ error: "Nie udało się zaktualizować rekordu." });
+    }
+    res.status(200).json({ message: "Pole finished zostało zaktualizowane." });
+  });
 });
 module.exports = router;

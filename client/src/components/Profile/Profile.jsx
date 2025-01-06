@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useContext } from 'react';
-import Navigation from '../Navigation/Navigation.jsx';
-import FriendCard from '../FriendCard.jsx';
-import ProfileInfo from './ProfileInfo.jsx';
-import Book from '../Book.jsx';
-import Achievement from './Achievement.jsx';
-import { AuthContext } from '../../AuthContext';
-import axios from 'axios';
+import React, { useState, useEffect, useContext } from "react";
+import Navigation from "../Navigation/Navigation.jsx";
+import FriendCard from "../FriendCard.jsx";
+import ProfileInfo from "./ProfileInfo.jsx";
+import Book from "../Book.jsx";
+import Achievement from "./Achievement.jsx";
+import { AuthContext } from "../../AuthContext";
+import axios from "axios";
 import "./Profile.css";
 
 const Profile = () => {
@@ -17,10 +17,12 @@ const Profile = () => {
     const fetchUserData = async () => {
       if (userID) {
         try {
-          const response = await axios.get(`http://localhost:5000/profile/${userID}`);
+          const response = await axios.get(
+            `http://localhost:5000/profile/${userID}`
+          );
           setUserData(response.data);
         } catch (error) {
-          console.error('Error fetching user data:', error);
+          console.error("Error fetching user data:", error);
         }
       }
     };
@@ -28,10 +30,12 @@ const Profile = () => {
     const fetchBookshelf = async () => {
       if (userID) {
         try {
-          const response = await axios.get(`http://localhost:5000/bookshelf/Favourite/${userID}`);
+          const response = await axios.get(
+            `http://localhost:5000/bookshelf/Favourite/${userID}`
+          );
           setBookshelf(response.data);
         } catch (error) {
-          console.error('Error fetching bookshelf:', error);
+          console.error("Error fetching bookshelf:", error);
         }
       }
     };
@@ -43,22 +47,23 @@ const Profile = () => {
   return (
     <>
       <Navigation title="Profil" />
-      <div className='container'>
-        <div className='content'>
+      <div className="container">
+        <div className="content">
           {userData ? (
-            <ProfileInfo 
-              username={userData[0].Name} 
+            <ProfileInfo
+              username={userData[0].Name}
               stats={{
-                ReadingSpeed: userData[0].ReadingSpeed,
+                TotalPagesRead: userData[0].TotalPagesRead,
+                FinishedBooks: userData[0].FinishedBooks,
                 TotalTime: userData[0].TotalTime,
-              }} 
+              }}
             />
           ) : (
             <p>Ładowanie danych użytkownika...</p>
           )}
-          <div className='box'>
+          <div className="box">
             <h3>Ulubione książki</h3>
-            <div className='favouriteBooks'>
+            <div className="favouriteBooks">
               {bookshelf.length > 0 ? (
                 bookshelf.map((book) => (
                   <Book
@@ -75,17 +80,17 @@ const Profile = () => {
               )}
             </div>
           </div>
-          <div className='box'>
+          <div className="box">
             <h3>Osiągnięcia</h3>
-            <div className='favouriteBooks'>
+            <div className="favouriteBooks">
               <Achievement />
               <Achievement />
             </div>
           </div>
         </div>
-        <div className='friendsList'>
-          <FriendCard name='Kolega123' active={true} />
-          <FriendCard name='Ktoś987' active={false} />
+        <div className="friendsList">
+          <FriendCard name="Kolega123" active={true} />
+          <FriendCard name="Ktoś987" active={false} />
         </div>
       </div>
     </>
