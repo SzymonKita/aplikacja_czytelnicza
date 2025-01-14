@@ -31,3 +31,10 @@
 .reactionButton:hover{
     color: blue;
 }
+
+.commentForm{
+    background-color: #6AD4DD;
+    border-radius: 8px;
+    border: 1px solid #797979;
+    width: auto;
+}

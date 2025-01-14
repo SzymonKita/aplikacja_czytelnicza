@@ -10,7 +10,7 @@ const ForumCommentForm = () => {
 
     return(
         <form onSubmit={handleSubmit}>
-            <div className='ratingForm'>
+            <div className='commentForm'>
                 <textarea
                     value={feedback}
                     onChange={(e) => setFeedback(e.target.value)}
