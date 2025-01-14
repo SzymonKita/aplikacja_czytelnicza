@@ -5,19 +5,17 @@ import ForumComment from './ForumComment.jsx'
 import image from '../blank-profile.png'
 import { useParams } from "react-router-dom"
 import React, { useState, useEffect, useContext } from "react";
+import { AuthContext } from "../../AuthContext";
+import axios from 'axios';
 import './ForumPost.css'
-
-
-const exampleParams = [{ id: 1, user: 'User 1', likes: 14, dislikes: 18, details: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer pharetra quis nunc vitae efficitur. Donec. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla porttitor malesuada odio, vel feugiat arcu dictum ut. Vestibulum elementum leo neque, in consectetur risus lobortis vitae. Ut pharetra pellentesque nisi eget lobortis. Nunc accumsan enim nec rhoncus consectetur. Praesent ultricies commodo massa. Sed viverra pharetra rutrum. Vivamus dapibus consequat ex. Proin id magna at nisl interdum maximus. Proin vitae tempus libero. Vivamus volutpat facilisis ligula, eu feugiat mauris. Proin nec erat sit amet ante convallis malesuada at nec nunc. Mauris accumsan at leo a mattis. Duis in accumsan massa. Donec egestas lectus in urna tristique, a facilisis tellus consequat. Proin id semper nibh. In gravida justo in volutpat luctus. Proin at tincidunt arcu. Mauris eleifend, nisl eget tincidunt fringilla, augue lacus aliquam nisi, eu porta metus quam id felis. Quisque aliquet odio in mi bibendum fringilla. Pellentesque laoreet, orci eleifend.' },
-{ id: 2, user: 'User 2', likes: 24, dislikes: 18, details: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer pharetra quis nunc vitae efficitur. Donec. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla porttitor malesuada odio, vel feugiat arcu dictum ut. Vestibulum elementum leo neque, in consectetur risus lobortis vitae. Ut pharetra pellentesque nisi eget lobortis. Nunc accumsan enim nec rhoncus consectetur. Praesent ultricies commodo massa. Sed viverra pharetra rutrum. Vivamus dapibus consequat ex. Proin id magna at nisl interdum maximus. Proin vitae tempus libero. Vivamus volutpat facilisis ligula, eu feugiat mauris. Proin nec erat sit amet ante convallis malesuada at nec nunc. Mauris accumsan at leo a mattis. Duis in accumsan massa. Donec egestas lectus in urna tristique, a facilisis tellus consequat. Proin id semper nibh. In gravida justo in volutpat luctus. Proin at tincidunt arcu. Mauris eleifend, nisl eget tincidunt fringilla, augue lacus aliquam nisi, eu porta metus quam id felis. Quisque aliquet odio in mi bibendum fringilla. Pellentesque laoreet, orci eleifend.' },
-{ id: 3, user: 'User 3', likes: 34, dislikes: 18, details: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer pharetra quis nunc vitae efficitur. Donec. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla porttitor malesuada odio, vel feugiat arcu dictum ut. Vestibulum elementum leo neque, in consectetur risus lobortis vitae. Ut pharetra pellentesque nisi eget lobortis. Nunc accumsan enim nec rhoncus consectetur. Praesent ultricies commodo massa. Sed viverra pharetra rutrum. Vivamus dapibus consequat ex. Proin id magna at nisl interdum maximus. Proin vitae tempus libero. Vivamus volutpat facilisis ligula, eu feugiat mauris. Proin nec erat sit amet ante convallis malesuada at nec nunc. Mauris accumsan at leo a mattis. Duis in accumsan massa. Donec egestas lectus in urna tristique, a facilisis tellus consequat. Proin id semper nibh. In gravida justo in volutpat luctus. Proin at tincidunt arcu. Mauris eleifend, nisl eget tincidunt fringilla, augue lacus aliquam nisi, eu porta metus quam id felis. Quisque aliquet odio in mi bibendum fringilla. Pellentesque laoreet, orci eleifend.' }
-]
 
 const ForumPost = (params) => {
     const { id } = useParams();
     const [post, setPost] = useState(null);
-    const [errorPost, setErrorPost] = useState(null);
-    const [comments, setComments] =useState(null);
+    const [error, setError] = useState(null);
+    const [comments, setComments] = useState(null);
+    const [reaction, setReaction] = useState(null);
+    const { userID, isLoggedIn } = useContext(AuthContext);
 
     useEffect(() => {
         const fetchPost = async () => {
@@ -34,7 +32,7 @@ const ForumPost = (params) => {
                 }
             } catch (error) {
                 console.error(error.message);
-                setErrorPost(error.message);
+                setError(error.message);
             }
         };
         const fetchComments = async () => {
@@ -46,7 +44,7 @@ const ForumPost = (params) => {
                     setComments(data);
                 } else {
                     throw new Error(
-                        data.error || "Błąd podczas pobierania danych o wpisie na forum"
+                        data.error || "Błąd podczas pobierania danych o komentarzach do wpisiu na forum"
                     );
                 }
             } catch (error) {
@@ -55,11 +53,11 @@ const ForumPost = (params) => {
             }
         };
 
-        fetchComments();
         fetchPost();
+        fetchComments();
     }, [id]);
 
-    if (errorPost) {
+    if (error) {
         return <Navigation title="Błąd" />;
     }
 
@@ -67,9 +65,106 @@ const ForumPost = (params) => {
         return <Navigation title="Ładowanie wpisu..." />;
     }
 
-    if(!comments){
+    if (!comments) {
         return <Navigation title="Ładowanie komentarzy do wpisu..." />;
     }
+
+    const checkReaction = async () => {
+        try {
+            const response = await fetch(`http://localhost:5000/forum/post/reactions/${id}/${userID}`);
+            const data = await response.json();
+            console.log("Info o rakcjia", data)
+
+            if (data.length > 0)
+                setReaction(data[0].Reaction);
+            else
+                setReaction("None")
+        } catch (error) {
+            console.error(error.message);
+        }
+
+    }
+
+    const toggleLike = async () => {
+        if (isLoggedIn) {
+            try {
+                const response = await axios.post(`http://localhost:5000/forum/post/react/${id}/${userID}/Like`);
+                console.log('Pozytywna reakcja dodana:', response.data);
+            } catch (error) {
+                console.error('Wystąpił błąd dodawania pozytywnej reakcji:', error);
+                alert("Wystąpił błąd dodawania pozytywnej reakcji.");
+            }
+            if (reaction === "Dislike") {
+                console.log("zmiana dislike")
+                setPost(
+                    {
+                        Author: post.Author,
+                        Detail: post.Detail,
+                        ID: post.ID,
+                        Title: post.Title,
+                        comments: post.comments,
+                        dislikes: post.dislikes - 1,
+                        likes: post.likes + 1
+                    }
+                )
+            }
+            if (reaction === "None") {
+                setPost(
+                    {
+                        Author: post.Author,
+                        Detail: post.Detail,
+                        ID: post.ID,
+                        Title: post.Title,
+                        comments: post.comments,
+                        dislikes: post.dislikes,
+                        likes: post.likes + 1
+                    }
+                )
+            }
+            setReaction("Like");
+        }
+    }
+
+    const toggleDislike = async () => {
+        if (isLoggedIn) {
+            try {
+                const response = await axios.post(`http://localhost:5000/forum/post/react/${id}/${userID}/Dislike`);
+                console.log('Negatywna reakcja dodana:', response.data);
+            } catch (error) {
+                console.error('Wystąpił błąd dodawania negatywnej reakcji:', error);
+                alert("Wystąpił błąd dodawania negatywnej reakcji.");
+            }
+            if (reaction === "Like") {
+                setPost(
+                    {
+                        Author: post.Author,
+                        Detail: post.Detail,
+                        ID: post.ID,
+                        Title: post.Title,
+                        comments: 30,
+                        dislikes: post.dislikes + 1,
+                        likes: post.likes - 1
+                    }
+                )
+            }
+            if (reaction === "None") {
+                setPost(
+                    {
+                        Author: post.Author,
+                        Detail: post.Detail,
+                        ID: post.ID,
+                        Title: post.Title,
+                        comments: 30,
+                        dislikes: post.dislikes + 1,
+                        likes: post.likes
+                    }
+                )
+            }
+            setReaction("Dislike");
+        }
+    }
+
+    checkReaction();
 
     return (
         <>
@@ -83,7 +178,8 @@ const ForumPost = (params) => {
                                 <b>{post.author}</b>
                             </div>
                             <div>
-                                👍︎{post.likes} 👎︎{post.dislikes}
+                                <button type='button' className='reactionButton' onClick={() => toggleLike()} style={{ color: reaction === "Like" ? "green" : "initial"}}>👍︎</button>{post.likes}
+                                <button type='button' className='reactionButton' onClick={() => toggleDislike()} style={{ color: reaction === "Dislike" ? "red" : "initial"}}>👎︎</button>{post.dislikes}
                             </div>
                         </div>
                         <p className='forumPostDetail'>
