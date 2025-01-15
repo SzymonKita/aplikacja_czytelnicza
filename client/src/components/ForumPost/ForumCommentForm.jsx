@@ -1,14 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from "react";
+import { AuthContext } from "../../AuthContext";
+import axios from 'axios';
 
-const ForumCommentForm = () => {
+const ForumCommentForm = ({ postId }) => {
     const [feedback, setFeedback] = useState('');
+    const { userID, isLoggedIn } = useContext(AuthContext);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // TODO: Dodać zapis do bazy danych
+        if(isLoggedIn){
+            try {
+                const response = await axios.post('http://localhost:5000/forum/comments', { postId, userId: userID, feedback });
+                console.log(response, "Ok?", response.status);
+
+                if (response.status == 201) {
+                    alert('Comment added successfully!');
+                    setFeedback(''); 
+                } else {
+                    alert(`Failed to add comment`);
+                }
+            } catch (error) {
+                console.error('Error submitting comment:', error);
+                alert('An error occurred. Please try again.');
+            }
+        }
     };
 
-    return(
+    return (
         <form onSubmit={handleSubmit}>
             <div className='commentForm'>
                 <textarea

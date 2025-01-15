@@ -71,16 +71,19 @@ const ForumPost = (params) => {
 
     const checkReaction = async () => {
         try {
-            const response = await fetch(`http://localhost:5000/forum/post/reactions/${id}/${userID}`);
+            const reactionData = {postId: id, userId: userID}
+            const queryString = new URLSearchParams(reactionData).toString();
+            const response = await fetch(`http://localhost:5000/forum/posts/reactions?${queryString}`);
             const data = await response.json();
-            console.log("Info o rakcjia", data)
+            console.log("Udało się pobrać", data, reactionData)
 
             if (data.length > 0)
                 setReaction(data[0].Reaction);
             else
                 setReaction("None")
-        } catch (error) {
-            console.error(error.message);
+        } catch (err) {
+            console.log("Błąd pobierania")
+            console.error(err.message);
         }
 
     }
@@ -88,14 +91,15 @@ const ForumPost = (params) => {
     const toggleLike = async () => {
         if (isLoggedIn) {
             try {
-                const response = await axios.post(`http://localhost:5000/forum/post/react/${id}/${userID}/Like`);
-                console.log('Pozytywna reakcja dodana:', response.data);
+                const reactionData = {postId: id, userId: userID, userReaction: "Like"}
+                const queryString = new URLSearchParams(reactionData).toString();
+                const response = await axios.post(`http://localhost:5000/forum/post/react?${queryString}`);
+                console.log('Pozytywna reakcja dodana do posta:', response.data);
             } catch (error) {
-                console.error('Wystąpił błąd dodawania pozytywnej reakcji:', error);
-                alert("Wystąpił błąd dodawania pozytywnej reakcji.");
+                console.error('Wystąpił błąd dodawania pozytywnej reakcji do posta:', error);
+                alert("Wystąpił błąd dodawania pozytywnej reakcji do posta.");
             }
             if (reaction === "Dislike") {
-                console.log("zmiana dislike")
                 setPost(
                     {
                         Author: post.Author,
@@ -128,11 +132,13 @@ const ForumPost = (params) => {
     const toggleDislike = async () => {
         if (isLoggedIn) {
             try {
-                const response = await axios.post(`http://localhost:5000/forum/post/react/${id}/${userID}/Dislike`);
-                console.log('Negatywna reakcja dodana:', response.data);
+                const reactionData = {postId: id, userId: userID, userReaction: "Like"}
+                const queryString = new URLSearchParams(reactionData).toString();
+                const response = await axios.post(`http://localhost:5000/forum/post/react?${queryString}`);
+                console.log('Negatywna reakcja dodana do posta:', response.data);
             } catch (error) {
-                console.error('Wystąpił błąd dodawania negatywnej reakcji:', error);
-                alert("Wystąpił błąd dodawania negatywnej reakcji.");
+                console.error('Wystąpił błąd dodawania negatywnej reakcji do posta:', error);
+                alert("Wystąpił błąd dodawania negatywnej reakcji do posta.");
             }
             if (reaction === "Like") {
                 setPost(
@@ -187,9 +193,9 @@ const ForumPost = (params) => {
                         </p>
                     </div>
                     Komentarze:
-                    <ForumCommentForm />
+                    <ForumCommentForm postId={id}/>
                     {comments.map((params) => (
-                        <ForumComment id={params.ID} user={params.Author} likes="123" dislikes="123" details={params.Detail} />
+                        <ForumComment id={params.ID} user={params.Author} likes={params.likes} dislikes={params.dislikes} details={params.Detail} />
                     ))}
 
                 </div>

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sty 14, 2025 at 10:04 PM
+-- Generation Time: Sty 15, 2025 at 09:31 PM
 -- Wersja serwera: 10.4.32-MariaDB
 -- Wersja PHP: 8.0.30
 
@@ -186,6 +186,27 @@ INSERT INTO `category` (`ID`, `Name`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Struktura tabeli dla tabeli `commentreactions`
+--
+
+CREATE TABLE `commentreactions` (
+  `CommentID` int(11) NOT NULL,
+  `UserID` int(11) NOT NULL,
+  `Reaction` enum('Like','Dislike') NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `commentreactions`
+--
+
+INSERT INTO `commentreactions` (`CommentID`, `UserID`, `Reaction`) VALUES
+(1, 1, 'Dislike'),
+(2, 2, 'Like'),
+(1, 2, 'Dislike');
+
+-- --------------------------------------------------------
+
+--
 -- Struktura tabeli dla tabeli `comments`
 --
 
@@ -193,16 +214,18 @@ CREATE TABLE `comments` (
   `ID` int(11) NOT NULL,
   `PostID` int(11) DEFAULT NULL,
   `UserID` int(11) DEFAULT NULL,
-  `Detail` text DEFAULT NULL
+  `Detail` text DEFAULT NULL,
+  `likes` int(11) NOT NULL,
+  `dislikes` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `comments`
 --
 
-INSERT INTO `comments` (`ID`, `PostID`, `UserID`, `Detail`) VALUES
-(1, 1, 2, 'Coś bym polecił ale nie wiem co'),
-(2, 1, 5, 'Ja też się nad tym zastanawiam, to podajcie jakieś ciekawe propozycje.');
+INSERT INTO `comments` (`ID`, `PostID`, `UserID`, `Detail`, `likes`, `dislikes`) VALUES
+(1, 1, 2, 'Coś bym polecił ale nie wiem co', 0, 2),
+(2, 1, 5, 'Ja też się nad tym zastanawiam, to podajcie jakieś ciekawe propozycje.', 1, 0);
 
 -- --------------------------------------------------------
 
@@ -238,7 +261,7 @@ CREATE TABLE `post` (
 
 INSERT INTO `post` (`ID`, `Title`, `UserID`, `Detail`, `likes`, `dislikes`, `comments`) VALUES
 (1, 'Polecacie książki w klimacie fantasy?', 1, 'Cześć wszystkim! 😊 Ostatnio wciągnąłem się w literaturę fantasy i szukam nowych inspiracji. Bardzo spodobały mi się takie tytuły jak:\"Władca Pierścieni\" J.R.R. Tolkiena\"Koło Czasu\" Roberta Jordana \"Cień wiatru\" Carlosa Ruiza Zafóna (choć to bardziej realizm magiczny). Szukam książek z bogato wykreowanymi światami, ciekawymi bohaterami i intrygującą fabułą. Czy macie jakieś ulubione tytuły, które polecilibyście komuś, kto uwielbia zatapiać się w magicznych krainach?Z góry dziękuję za wszystkie propozycje! 🙌P.S. Mile widziane mniej znane perełki, które warto odkryć!', 3, 1, 30),
-(2, 'Najlepsze książki z gatunku science fiction – co polecacie?', 2, 'Hej wszystkim! 👋Ostatnio wpadłem w totalny zachwyt nad science fiction i szukam kolejnych świetnych książek do przeczytania. Przykłady tytułów, które bardzo mi się podobały:\"Diuna\" Franka Herberta – za epicką skalę i polityczne intrygi.\"Koniec dzieciństwa\" Arthura C. Clarke`a – niesamowicie wizjonerska książka.\"Neuromancer\" Williama Gibsona – dla fanów cyberpunku coś genialnego.Chętnie poznam Wasze ulubione tytuły z tego gatunku. Interesuje mnie zarówno klasyka, jak i nowsze pozycje. Szczególnie zależy mi na książkach, które mają głębsze przesłanie albo przedstawiają złożone światy i technologie.Macie coś do polecenia? Dzięki z góry! 🚀', 123, 12, 19);
+(2, 'Najlepsze książki z gatunku science fiction – co polecacie?', 2, 'Hej wszystkim! 👋Ostatnio wpadłem w totalny zachwyt nad science fiction i szukam kolejnych świetnych książek do przeczytania. Przykłady tytułów, które bardzo mi się podobały:\"Diuna\" Franka Herberta – za epicką skalę i polityczne intrygi.\"Koniec dzieciństwa\" Arthura C. Clarke`a – niesamowicie wizjonerska książka.\"Neuromancer\" Williama Gibsona – dla fanów cyberpunku coś genialnego.Chętnie poznam Wasze ulubione tytuły z tego gatunku. Interesuje mnie zarówno klasyka, jak i nowsze pozycje. Szczególnie zależy mi na książkach, które mają głębsze przesłanie albo przedstawiają złożone światy i technologie.Macie coś do polecenia? Dzięki z góry! 🚀', 0, 1, 19);
 
 -- --------------------------------------------------------
 
@@ -260,6 +283,7 @@ INSERT INTO `postreactions` (`PostID`, `UserID`, `Reaction`) VALUES
 (1, 5, 'Dislike'),
 (1, 1, 'Like'),
 (1, 6, 'Like'),
+(2, 2, 'Dislike'),
 (1, 2, 'Like');
 
 -- --------------------------------------------------------
@@ -504,6 +528,13 @@ ALTER TABLE `category`
   ADD PRIMARY KEY (`ID`);
 
 --
+-- Indeksy dla tabeli `commentreactions`
+--
+ALTER TABLE `commentreactions`
+  ADD KEY `CommentID` (`CommentID`),
+  ADD KEY `UserID` (`UserID`);
+
+--
 -- Indeksy dla tabeli `comments`
 --
 ALTER TABLE `comments`
@@ -619,7 +650,7 @@ ALTER TABLE `category`
 -- AUTO_INCREMENT for table `comments`
 --
 ALTER TABLE `comments`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `post`
@@ -694,6 +725,13 @@ ALTER TABLE `bookcategory`
 ALTER TABLE `bookshelf`
   ADD CONSTRAINT `bookshelf_ibfk_1` FOREIGN KEY (`UserID`) REFERENCES `user` (`ID`),
   ADD CONSTRAINT `bookshelf_ibfk_2` FOREIGN KEY (`BookID`) REFERENCES `book` (`ID`);
+
+--
+-- Constraints for table `commentreactions`
+--
+ALTER TABLE `commentreactions`
+  ADD CONSTRAINT `commentreactions_ibfk_1` FOREIGN KEY (`CommentID`) REFERENCES `comments` (`ID`),
+  ADD CONSTRAINT `commentreactions_ibfk_2` FOREIGN KEY (`UserID`) REFERENCES `user` (`ID`);
 
 --
 -- Constraints for table `comments`
