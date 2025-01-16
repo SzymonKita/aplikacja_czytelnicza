@@ -13,6 +13,7 @@ const BookList = () => {
     const [authors, setAuthors] = useState([])
     const [selectedAuthor, setSelectedAuthor] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('');
+    const [sortOrder, setSortOrder] = useState('');
 
     useEffect(() => {
         // Pobranie książek z API
@@ -45,7 +46,15 @@ const BookList = () => {
         return matchesAuthor && matchesCategory;
     });
 
-    console.log(filteredBooks)
+    const sortedBooks = [...filteredBooks].sort((a, b) => {
+        if (sortOrder === 'dateAsc') {
+            return new Date(a.ReleaseDate) - new Date(b.ReleaseDate);
+        } else if (sortOrder === 'dateDecs') {
+            return new Date(b.ReleaseDate) - new Date(a.ReleaseDate);
+        }
+        return 0;
+    });
+
 
     return (
         <>
@@ -57,7 +66,8 @@ const BookList = () => {
                             <h2>Filtry</h2>
                             <input type='text' placeholder='Wyszukaj...' />
                             <h3>Sortuj</h3>
-                            <select name='sortBy'>
+                            <select name='sortBy' value={sortOrder} onChange={(e) => setSortOrder(e.target.value)}>
+                                <option value="">Brak sortowania</option>
                                 <option value='dateDecs'>Data wydania malejąco</option>
                                 <option value='dateAsc'>Data wydania rosnąco</option>
                                 <option value='readersDesc'>Liczba czytelników malejąco</option>
@@ -98,7 +108,7 @@ const BookList = () => {
                             <Link to='/suggestBook'><button className="suggestBookButton" type='button'>Zaproponuj nową książkę</button></Link>
                         </div>
                         <div className='list'>
-                            {filteredBooks.map(book => (
+                            {sortedBooks.map(book => (
                                 <Book
                                     key={book.ID}
                                     id={book.ID}
