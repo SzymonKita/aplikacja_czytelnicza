@@ -50,6 +50,34 @@ router.get('/', (req, res) => {
     });
 });
 
+router.get('/categories', (req, res) => {
+    const query = `
+        Select Name from category
+    `
+    db.query(query, (err, results) => {
+        if (err) {
+            console.error('Błąd podczas pobierania kategorii:', err);
+            return res.status(500).json({ error: 'Błąd podczas pobierania kategorii' });
+        }
+
+        res.json(results);
+    });
+})
+
+router.get('/authors', (req, res) => {
+    const query = `
+        SELECT FirstName, LastName FROM Author
+    `
+    db.query(query, (err, results) => {
+        if (err) {
+            console.error('Błąd podczas pobierania autoró:', err);
+            return res.status(500).json({ error: 'Błąd podczas pobierania autorów' });
+        }
+
+        res.json(results);
+    });
+})
+
 router.get('/pending', (req, res) => {
     const query = `
         SELECT 
