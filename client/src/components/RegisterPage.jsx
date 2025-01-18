@@ -1,6 +1,8 @@
 import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../AuthContext';
+import Navigation from './Navigation/Navigation.jsx'
+import FriendCard from './FriendCard.jsx'
 
 const RegisterPage = () => {
   const [login, setLogin] = useState('');
@@ -54,39 +56,48 @@ const RegisterPage = () => {
   };
 
   return (
-    <div>
-      <h2>Rejestracja</h2>
-      <form onSubmit={handleSubmit}>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-        <input
-          type="text"
-          placeholder="Login"
-          value={login}
-          onChange={(e) => setLogin(e.target.value)}
-        />
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <input
-          type="password"
-          placeholder="Hasło"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <input
-          type="password"
-          placeholder="Potwierdź hasło"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-        />
-        <button type="submit" disabled={loading}>
-          {loading ? 'Ładowanie...' : 'Zarejestruj'}
-        </button>
-      </form>
-    </div>
+    <>
+      <Navigation title="Strona główna" isLoggedIn={false} />
+      <div className='container'>
+        <div className='content'>
+          <div>
+            <h2>Rejestracja</h2>
+            <form onSubmit={handleSubmit}>
+              {error && <p style={{ color: 'red' }}>{error}</p>}
+              <input
+                type="text"
+                placeholder="Login"
+                value={login}
+                onChange={(e) => setLogin(e.target.value)}
+              />
+              <input
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <input
+                type="password"
+                placeholder="Hasło"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <input
+                type="password"
+                placeholder="Potwierdź hasło"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
+              <button type="submit" disabled={loading}>
+                {loading ? 'Ładowanie...' : 'Zarejestruj'}
+              </button>
+            </form>
+          </div>
+        </div>
+        
+      </div>
+    </>
+
   );
 };
 
